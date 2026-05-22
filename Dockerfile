@@ -34,10 +34,12 @@ COPY . .
 # Symfony console (composer post-install scripts) requires .env on disk (.env is not in the image context).
 RUN cp .env.example .env
 
+# --no-scripts: avoid symfony-cmd post-install (not on PATH when plugins disabled as root).
+# Prod cache/assets run in entrypoint.sh instead.
 RUN if [ "$INSTALL_DEV_DEPS" = "1" ]; then \
-        composer install --no-interaction --prefer-dist; \
+        COMPOSER_ALLOW_SUPERUSER=1 composer install --no-interaction --prefer-dist; \
     else \
-        composer install --no-interaction --prefer-dist --no-dev; \
+        COMPOSER_ALLOW_SUPERUSER=1 composer install --no-interaction --prefer-dist --no-dev --no-scripts; \
     fi \
     && composer dump-autoload --optimize --classmap-authoritative \
     && test -f vendor/autoload_runtime.php
