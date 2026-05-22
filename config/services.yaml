@@ -7,6 +7,7 @@ parameters:
     service_package_images_dir: '%kernel.project_dir%/public/uploads/service-packages'
     theme_sample_images_dir: '%kernel.project_dir%/public/uploads/theme-samples'
     env(APP_URL): ''
+    default_mailer_dsn: 'null://null'
 
 services:
     # default configuration for services in *this* file

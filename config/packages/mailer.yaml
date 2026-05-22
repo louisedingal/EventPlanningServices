@@ -5,7 +5,8 @@ framework:
 when@prod:
     framework:
         mailer:
-            dsn: 'brevo+api://%env(BREVO_API_KEY)%@default'
+            # null://null when unset so the app boots without mail; entrypoint sets MAILER_DSN from BREVO_API_KEY
+            dsn: '%env(default:default_mailer_dsn:MAILER_DSN)%'
 
 when@test:
     framework:

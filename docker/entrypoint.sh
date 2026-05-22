@@ -22,6 +22,11 @@ if [ -n "${APP_URL:-}" ]; then
     export DEFAULT_URI="${APP_URL}"
 fi
 
+# Prod mailer: build DSN from BREVO_API_KEY when Railway only sets that variable
+if [ -n "${BREVO_API_KEY:-}" ] && [ -z "${MAILER_DSN:-}" ]; then
+    export MAILER_DSN="brevo+api://${BREVO_API_KEY}@default"
+fi
+
 # Symfony needs a .env file; compose mounts host .env over the image copy.
 if [ ! -f .env ]; then
     if [ -f .env.example ]; then
@@ -78,6 +83,7 @@ bootstrap_background() {
         console cache:warmup --env=prod --no-debug
     fi
 
+    console importmap:install --no-interaction 2>/dev/null || true
     console asset-map:compile 2>/dev/null || true
 
     echo "[background] Bootstrap finished."

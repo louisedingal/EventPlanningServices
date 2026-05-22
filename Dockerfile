@@ -47,6 +47,10 @@ RUN if [ "$INSTALL_DEV_DEPS" = "1" ]; then \
 RUN sed -i 's/^APP_ENV=.*/APP_ENV=prod/' .env \
     && sed -i 's/^APP_DEBUG=.*/APP_DEBUG=0/' .env
 
+# Vendor JS for AssetMapper (not committed; required before asset-map:compile)
+RUN php bin/console importmap:install --no-interaction \
+    && php bin/console asset-map:compile --env=prod --no-debug
+
 RUN mkdir -p var/cache var/log public/uploads/service-packages public/uploads/theme-samples config/jwt \
     && chown -R www-data:www-data var public/uploads config/jwt
 
