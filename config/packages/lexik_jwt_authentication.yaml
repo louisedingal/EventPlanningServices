@@ -1,0 +1,9 @@
+lexik_jwt_authentication:
+    secret_key: '%env(resolve:JWT_SECRET_KEY)%'
+    public_key: '%env(resolve:JWT_PUBLIC_KEY)%'
+    pass_phrase: '%env(JWT_PASSPHRASE)%'
+    # Mobile app keeps sessions in storage; 7 days avoids frequent re-login during development.
+    token_ttl: 604800
+    # Use email as the user identifier claim in JWT payload.
+    # After changing this, get a NEW token from /api/login and use it in Postman.
+    user_id_claim: email

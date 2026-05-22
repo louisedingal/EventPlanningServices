@@ -1,0 +1,86 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}All Staff - Lux Events{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('styles/admin.css') }}">
+{% endblock %}
+
+{% block body %}
+<div class="admin-container">
+    {% include 'admin/_sidebar.html.twig' %}
+    <main class="main-content">
+        {% include 'admin/_header.html.twig' with {title: 'All Staff'} %}
+
+        <!-- Search Section -->
+        <div class="search-filter-section" style="background: white; padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);">
+            <form method="GET" action="{{ path('app_user_staff') }}" class="search-form" style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: end;">
+                <div style="flex: 1; min-width: 200px;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #334155; font-size: 0.875rem;">Search</label>
+                    <input type="text" name="q" value="{{ query }}" placeholder="Search by email..." 
+                           style="width: 100%; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.875rem;">
+                </div>
+                <div style="display: flex; gap: 0.5rem;">
+                    <button type="submit" class="btn-primary" style="padding: 0.75rem 1.5rem; margin: 0;">🔍 Search</button>
+                    <a href="{{ path('app_user_staff') }}" class="btn-primary" style="padding: 0.75rem 1.5rem; background: #64748b; text-decoration: none;">Clear</a>
+                </div>
+            </form>
+        </div>
+
+        <div class="table-card">
+            <div class="table-header">
+                <h3>All Staff Members ({{ staff|length }})</h3>
+                <a href="{{ path('app_admin_dashboard') }}" class="view-all-link">← Back to Dashboard</a>
+            </div>
+            <div class="table-content">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Email</th>
+                            <th>Roles</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for staffMember in staff %}
+                            <tr>
+                                <td>#{{ staffMember.id }}</td>
+                                <td><strong>{{ staffMember.email }}</strong></td>
+                                <td>
+                                    {% for role in staffMember.roles %}
+                                        <span class="role-badge" style="padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem; margin-right: 0.5rem;
+                                            {% if role == 'ROLE_ADMIN' %}background: #fef3c7; color: #92400e;
+                                            {% else %}background: #dbeafe; color: #1e40af;{% endif %}">
+                                            {{ role }}
+                                        </span>
+                                    {% endfor %}
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="3" class="empty-state">No staff members found</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

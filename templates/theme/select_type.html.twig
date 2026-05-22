@@ -1,0 +1,31 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Select Theme Type - Lux Events{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('styles/admin.css') }}">
+{% endblock %}
+
+{% block body %}
+<div class="admin-container">
+    {% include 'admin/_sidebar.html.twig' %}
+    <main class="main-content">
+        {% include 'admin/_header.html.twig' with {title: 'New Theme'} %}
+
+        <div class="form-card">
+            <div class="form-header">
+                <h3>Choose Event Type</h3>
+                <a href="{{ path('app_theme_index') }}" class="view-all-link">← Back to Themes</a>
+            </div>
+            <div class="form-content">
+                <div class="form-actions" style="margin-top: 0;">
+                    <a class="btn-primary" href="{{ path('app_theme_new', {type: 'Birthday'}) }}">Birthday</a>
+                    <a class="btn-secondary" href="{{ path('app_theme_new', {type: 'Wedding'}) }}">Wedding</a>
+                </div>
+                <p class="help-text" style="margin-top: 0.75rem;">Pick where this theme belongs. You can add the details on the next step.</p>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

@@ -1,0 +1,2572 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Lux Events - Professional Event Planning{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <!-- Immediate style injection to prevent admin CSS conflicts -->
+    <style id="landing-page-immediate-styles">
+        /* Critical styles that must load first */
+        body { margin: 0 !important; padding: 0 !important; background: #ffffff !important; overflow-x: hidden !important; overflow-y: auto !important; }
+        html { overflow-x: hidden !important; overflow-y: auto !important; }
+        .landing-top { position: fixed !important; top: 0 !important; left: 0 !important; right: 0 !important; z-index: 1200 !important; }
+        .main-header { background: linear-gradient(135deg, #1e293b 0%, #334155 100%) !important; position: static !important; z-index: 1200 !important; width: 100% !important; margin: 0 !important; padding: 0 !important; display: block !important; transition: all 0.3s ease !important; }
+        .main-nav { background: linear-gradient(135deg, #1e293b 0%, #334155 100%) !important; width: 100% !important; margin: 0 !important; padding: 1rem 2rem !important; display: block !important; position: static !important; z-index: 1190 !important; }
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('styles/landing.css') }}">
+    <link rel="stylesheet" href="{{ asset('styles/service-packages.css') }}">
+    <style>
+        /* Force landing page styles to override admin styles */
+        html {
+            font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+        }
+        body {
+            font-family: 'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
+            background-color: #ffffff !important;
+            color: #1e293b !important;
+            line-height: 1.6 !important;
+            overflow-x: hidden !important;
+            overflow-y: auto !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            height: auto !important;
+            min-height: 100vh !important;
+            position: static !important;
+        }
+        
+        html {
+            overflow-x: hidden !important;
+            overflow-y: auto !important;
+            height: auto !important;
+            position: static !important;
+        }
+        
+        /* Header + nav stay visible while scrolling */
+        .landing-top {
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            z-index: 1200 !important;
+        }
+
+        /* On scroll: hide header strip, keep only nav menu visible */
+        .landing-top.nav-only .main-header {
+            max-height: 0 !important;
+            opacity: 0 !important;
+            overflow: hidden !important;
+            visibility: hidden !important;
+            pointer-events: none !important;
+            transform: translateY(-10px) !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        .landing-top.nav-only .main-nav {
+            box-shadow: 0 10px 28px rgba(30, 41, 59, 0.30) !important;
+            transform: translateY(-1px) !important;
+            backdrop-filter: blur(10px) saturate(120%) !important;
+            -webkit-backdrop-filter: blur(10px) saturate(120%) !important;
+            transition: box-shadow 0.4s cubic-bezier(0.22, 1, 0.36, 1) !important;
+        }
+
+        .main-header {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%) !important;
+            color: #ffffff !important;
+            position: static !important;
+            z-index: 1200 !important;
+            width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            display: block !important;
+            box-shadow: none !important;
+            max-height: 140px !important;
+            overflow: hidden !important;
+            transform: translateY(0) !important;
+            visibility: visible !important;
+            transition: max-height 0.42s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.34s ease, transform 0.42s cubic-bezier(0.22, 1, 0.36, 1), visibility 0.34s ease !important;
+            will-change: max-height, opacity, transform !important;
+        }
+        
+        /* Enhanced shadow and backdrop when sticky/scrolled */
+        /* Kept for compatibility, but header is now static */
+        .main-header.scrolled {
+            box-shadow: 0 8px 32px rgba(30, 41, 59, 0.25), 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.98) 0%, rgba(51, 65, 85, 0.98) 100%) !important;
+            backdrop-filter: blur(12px) saturate(180%) !important;
+            -webkit-backdrop-filter: blur(12px) saturate(180%) !important;
+        }
+        
+        /* Subtle shadow increase on scroll for better visual feedback */
+        @supports (position: sticky) {
+            .main-header {
+                box-shadow: 0 2px 8px rgba(30, 41, 59, 0.1) !important;
+            }
+        }
+        
+        .header-top-bar {
+            padding: 0.75rem 2rem !important;
+            padding-left: 3rem !important;
+            padding-right: 3rem !important;
+            border-bottom: none !important;
+            width: 100% !important;
+            margin: 0 !important;
+            box-sizing: border-box !important;
+            display: flex !important;
+            align-items: center !important;
+            min-height: 84px !important;
+        }
+        
+        .header-top-content {
+            max-width: 1400px !important;
+            margin: 0 auto !important;
+            display: flex !important;
+            justify-content: space-between !important;
+            align-items: center !important;
+            gap: 2rem !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
+        }
+        
+        .header-logo {
+            margin-left: -8rem !important;
+            padding-left: 0 !important;
+        }
+        
+        .header-right {
+            margin-right: -8rem !important;
+            padding-right: 0 !important;
+        }
+        
+        .main-nav {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%) !important;
+            padding: 1rem 3rem !important;
+            border-top: none !important;
+            width: 100% !important;
+            margin: 0 !important;
+            display: block !important;
+            position: static !important;
+            z-index: 1190 !important;
+            transform: translateY(0) !important;
+            will-change: transform, box-shadow, background !important;
+            transition: transform 0.42s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.42s cubic-bezier(0.22, 1, 0.36, 1), background 0.35s ease !important;
+        }
+        
+        /* Enhanced navigation when header is scrolled */
+        .main-header.scrolled .main-nav {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.98) 0%, rgba(51, 65, 85, 0.98) 100%) !important;
+            backdrop-filter: blur(12px) saturate(180%) !important;
+            -webkit-backdrop-filter: blur(12px) saturate(180%) !important;
+        }
+        
+        .nav-container {
+            max-width: 1400px !important;
+            margin: 0 auto !important;
+            display: flex !important;
+            justify-content: center !important;
+            align-items: center !important;
+            gap: 0.5rem !important;
+            flex-wrap: wrap !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
+        }
+        
+        .nav-link {
+            color: #cbd5e1 !important;
+            text-decoration: none !important;
+            font-size: 0.875rem !important;
+            font-weight: 500 !important;
+            transition: color 0.28s ease, transform 0.28s cubic-bezier(0.22, 1, 0.36, 1), background 0.28s ease !important;
+            white-space: nowrap !important;
+            padding: 0.625rem 1.25rem !important;
+            border-radius: 8px !important;
+            position: relative !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 0.5rem !important;
+            background: transparent !important;
+            border: none !important;
+            cursor: pointer !important;
+            font-family: 'Manrope', sans-serif !important;
+        }
+
+        .nav-link::after {
+            content: '' !important;
+            position: absolute !important;
+            left: 1.25rem !important;
+            right: 1.25rem !important;
+            bottom: 0.35rem !important;
+            height: 2px !important;
+            background: rgba(255, 255, 255, 0.95) !important;
+            border-radius: 999px !important;
+            transform: scaleX(0) !important;
+            transform-origin: left center !important;
+            transition: transform 0.32s cubic-bezier(0.22, 1, 0.36, 1) !important;
+        }
+        
+        .nav-link:hover {
+            color: #ffffff !important;
+            background: transparent !important;
+            transform: translateY(-1px) !important;
+        }
+
+        .nav-link:hover::after {
+            transform: scaleX(1) !important;
+        }
+        
+        /* Ensure auth buttons are perfectly aligned */
+        .auth-buttons {
+            display: flex !important;
+            align-items: center !important;
+            gap: 0.75rem !important;
+        }
+        
+        /* Professional Button Styles */
+        .btn-login {
+            background: transparent !important;
+            color: #ffffff !important;
+            padding: 0.625rem 1.5rem !important;
+            border: 2px solid rgba(255, 255, 255, 0.9) !important;
+            border-radius: 8px !important;
+            text-decoration: none !important;
+            font-weight: 600 !important;
+            font-size: 0.875rem !important;
+            letter-spacing: 0.3px !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            white-space: nowrap !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            min-height: 42px !important;
+            height: 42px !important;
+            box-sizing: border-box !important;
+            line-height: 1 !important;
+            vertical-align: middle !important;
+            margin: 0 !important;
+            cursor: pointer !important;
+            position: relative !important;
+            overflow: hidden !important;
+            backdrop-filter: blur(10px) !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+        }
+        
+        .btn-login::before {
+            content: '' !important;
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 0 !important;
+            height: 100% !important;
+            background: #ffffff !important;
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            z-index: -1 !important;
+        }
+        
+        .btn-login:hover::before {
+            width: 100% !important;
+        }
+        
+        .btn-login:hover {
+            background: #ffffff !important;
+            color: #1e293b !important;
+            border-color: #ffffff !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 6px 16px rgba(255, 255, 255, 0.25) !important;
+        }
+        
+        .btn-register {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+            color: #ffffff !important;
+            padding: 0.625rem 1.5rem !important;
+            border-radius: 8px !important;
+            text-decoration: none !important;
+            font-weight: 600 !important;
+            font-size: 0.875rem !important;
+            letter-spacing: 0.3px !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            white-space: nowrap !important;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25), 0 2px 4px rgba(59, 130, 246, 0.15) !important;
+            border: 2px solid transparent !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            min-height: 42px !important;
+            height: 42px !important;
+            box-sizing: border-box !important;
+            line-height: 1 !important;
+            vertical-align: middle !important;
+            margin: 0 !important;
+            cursor: pointer !important;
+            position: relative !important;
+            overflow: hidden !important;
+        }
+        
+        .btn-register::before {
+            content: '' !important;
+            position: absolute !important;
+            top: 0 !important;
+            left: -100% !important;
+            width: 100% !important;
+            height: 100% !important;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent) !important;
+            transition: left 0.5s ease !important;
+        }
+        
+        .btn-register:hover::before {
+            left: 100% !important;
+        }
+        
+        .btn-register:hover {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
+            color: #ffffff !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.35), 0 4px 8px rgba(59, 130, 246, 0.2) !important;
+        }
+        
+        .btn-get-party {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+            color: #ffffff !important;
+            padding: 0.625rem 1.5rem !important;
+            border-radius: 8px !important;
+            text-decoration: none !important;
+            font-weight: 600 !important;
+            font-size: 0.875rem !important;
+            letter-spacing: 0.3px !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            white-space: nowrap !important;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.25), 0 2px 4px rgba(59, 130, 246, 0.15) !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            height: 42px !important;
+            box-sizing: border-box !important;
+            line-height: 1 !important;
+            border: none !important;
+            cursor: pointer !important;
+            position: relative !important;
+            overflow: hidden !important;
+        }
+        
+        .btn-get-party::before {
+            content: '' !important;
+            position: absolute !important;
+            top: 0 !important;
+            left: -100% !important;
+            width: 100% !important;
+            height: 100% !important;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent) !important;
+            transition: left 0.5s ease !important;
+        }
+        
+        .btn-get-party:hover::before {
+            left: 100% !important;
+        }
+        
+        .btn-get-party:hover {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
+            color: #ffffff !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.35), 0 4px 8px rgba(59, 130, 246, 0.2) !important;
+        }
+        
+        .btn-login-hero {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            background-color: rgba(255, 255, 255, 0.15) !important;
+            color: #ffffff !important;
+            padding: 0.625rem 2rem !important;
+            border: 2px solid rgba(255, 255, 255, 0.9) !important;
+            border-radius: 8px !important;
+            text-decoration: none !important;
+            font-weight: 600 !important;
+            font-size: 0.875rem !important;
+            letter-spacing: 0.3px !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25), 0 2px 8px rgba(0, 0, 0, 0.15) !important;
+            backdrop-filter: blur(10px) !important;
+            position: relative !important;
+            overflow: hidden !important;
+            cursor: pointer !important;
+            height: 42px !important;
+            min-height: 42px !important;
+            box-sizing: border-box !important;
+            line-height: 1 !important;
+        }
+        
+        .btn-login-hero::before {
+            content: '' !important;
+            position: absolute !important;
+            top: 0 !important;
+            left: 0 !important;
+            width: 0 !important;
+            height: 100% !important;
+            background: #ffffff !important;
+            transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            z-index: -1 !important;
+        }
+        
+        .btn-login-hero:hover::before {
+            width: 100% !important;
+        }
+        
+        .btn-login-hero:hover {
+            background-color: #ffffff !important;
+            color: #1e293b !important;
+            border-color: #ffffff !important;
+            transform: translateY(-3px) !important;
+            box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35), 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+        }
+        
+        .btn-register-hero {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+            color: #ffffff !important;
+            padding: 0.625rem 2rem !important;
+            border-radius: 8px !important;
+            text-decoration: none !important;
+            font-weight: 600 !important;
+            font-size: 0.875rem !important;
+            letter-spacing: 0.3px !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            box-shadow: 0 6px 20px rgba(245, 158, 11, 0.35), 0 2px 8px rgba(245, 158, 11, 0.2) !important;
+            border: none !important;
+            cursor: pointer !important;
+            position: relative !important;
+            overflow: hidden !important;
+            height: 42px !important;
+            min-height: 42px !important;
+            box-sizing: border-box !important;
+            line-height: 1 !important;
+        }
+        
+        .btn-register-hero::before {
+            content: '' !important;
+            position: absolute !important;
+            top: 0 !important;
+            left: -100% !important;
+            width: 100% !important;
+            height: 100% !important;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent) !important;
+            transition: left 0.5s ease !important;
+        }
+        
+        .btn-register-hero:hover::before {
+            left: 100% !important;
+        }
+        
+        .btn-register-hero:hover {
+            background: linear-gradient(135deg, #d97706 0%, #b45309 100%) !important;
+            transform: translateY(-3px) !important;
+            box-shadow: 0 10px 28px rgba(245, 158, 11, 0.45), 0 4px 12px rgba(245, 158, 11, 0.3) !important;
+        }
+        
+        .btn-contact-now {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+            color: #ffffff !important;
+            padding: 0.625rem 2rem !important;
+            border-radius: 8px !important;
+            text-decoration: none !important;
+            font-weight: 600 !important;
+            font-size: 0.875rem !important;
+            letter-spacing: 0.3px !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            box-shadow: 0 6px 20px rgba(245, 158, 11, 0.35), 0 2px 8px rgba(245, 158, 11, 0.2) !important;
+            border: none !important;
+            cursor: pointer !important;
+            position: relative !important;
+            overflow: hidden !important;
+            height: 42px !important;
+            min-height: 42px !important;
+            box-sizing: border-box !important;
+            line-height: 1 !important;
+        }
+        
+        .btn-contact-now::before {
+            content: '' !important;
+            position: absolute !important;
+            top: 0 !important;
+            left: -100% !important;
+            width: 100% !important;
+            height: 100% !important;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent) !important;
+            transition: left 0.5s ease !important;
+        }
+        
+        .btn-contact-now:hover::before {
+            left: 100% !important;
+        }
+        
+        .btn-contact-now:hover {
+            background: linear-gradient(135deg, #d97706 0%, #b45309 100%) !important;
+            transform: translateY(-3px) !important;
+            box-shadow: 0 10px 28px rgba(245, 158, 11, 0.45), 0 4px 12px rgba(245, 158, 11, 0.3) !important;
+        }
+        
+        .btn-submit {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%) !important;
+            color: #ffffff !important;
+            padding: 0.625rem 1.5rem !important;
+            border: none !important;
+            border-radius: 8px !important;
+            font-weight: 600 !important;
+            font-size: 0.875rem !important;
+            letter-spacing: 0.3px !important;
+            cursor: pointer !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            margin-top: 0.5rem !important;
+            box-shadow: 0 6px 20px rgba(30, 41, 59, 0.3), 0 2px 8px rgba(30, 41, 59, 0.2) !important;
+            position: relative !important;
+            overflow: hidden !important;
+            width: 100% !important;
+            height: 42px !important;
+            min-height: 42px !important;
+            box-sizing: border-box !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            line-height: 1 !important;
+        }
+        
+        .btn-submit::before {
+            content: '' !important;
+            position: absolute !important;
+            top: 0 !important;
+            left: -100% !important;
+            width: 100% !important;
+            height: 100% !important;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.15), transparent) !important;
+            transition: left 0.5s ease !important;
+        }
+        
+        .btn-submit:hover::before {
+            left: 100% !important;
+        }
+        
+        .btn-submit:hover {
+            background: linear-gradient(135deg, #334155 0%, #475569 100%) !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 10px 28px rgba(30, 41, 59, 0.4), 0 4px 12px rgba(30, 41, 59, 0.25) !important;
+        }
+        
+        /* Logo styles with hover effect */
+        .header-logo a {
+            display: flex !important;
+            align-items: center !important;
+            gap: 0.75rem !important;
+            text-decoration: none !important;
+            color: #ffffff !important;
+            transition: all 0.3s ease !important;
+            padding: 0.25rem !important;
+            border-radius: 8px !important;
+        }
+        
+        .header-logo a:hover {
+            transform: scale(1.05) !important;
+            filter: drop-shadow(0 4px 12px rgba(255, 255, 255, 0.3)) !important;
+        }
+        
+        .header-logo img {
+            height: 64px !important;
+            width: auto !important;
+            transition: all 0.3s ease !important;
+            filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4)) drop-shadow(0 0 8px rgba(255, 255, 255, 0.2)) !important;
+            background: rgba(255, 255, 255, 0.05) !important;
+            padding: 0.35rem !important;
+            border-radius: 12px !important;
+            backdrop-filter: blur(5px) !important;
+        }
+        
+        .header-logo a:hover img {
+            transform: scale(1.1) rotate(2deg) !important;
+            filter: drop-shadow(0 4px 16px rgba(255, 255, 255, 0.4)) !important;
+        }
+        
+        .logo-text {
+            font-family: 'Playfair Display', serif !important;
+            font-size: 2.25rem !important;
+            font-weight: 700 !important;
+            letter-spacing: 1px !important;
+            color: #ffffff !important;
+            transition: all 0.3s ease !important;
+            text-shadow: 0 3px 8px rgba(0, 0, 0, 0.4), 0 0 12px rgba(255, 255, 255, 0.15) !important;
+        }
+        
+        .header-logo a:hover .logo-text {
+            color: #fbbf24 !important;
+            text-shadow: 0 4px 12px rgba(251, 191, 36, 0.5) !important;
+            transform: translateX(2px) !important;
+        }
+        
+        /* Services Offered - Shifted Left from Right Edge */
+        .header-center {
+            flex: 1 !important;
+            display: flex !important;
+            justify-content: flex-end !important;
+            align-items: center !important;
+            text-align: right !important;
+            padding-right: 10rem !important;
+            margin-right: 0 !important;
+        }
+        
+        /* Additional shift for logged-in users */
+        .header-center.logged-in-user {
+            padding-right: 15rem !important;
+        }
+        
+        .services-text {
+            font-size: 1.5rem !important;
+            font-weight: 700 !important;
+            letter-spacing: 3px !important;
+            text-transform: uppercase !important;
+            color: #ffffff !important;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.3) !important;
+            font-family: 'Manrope', sans-serif !important;
+        }
+        
+        /* About Us Description - Professional Styling */
+        .about-section {
+            background-color: #f8fafc !important;
+            padding: 6rem 0 !important;
+        }
+
+        .about-section .section-title {
+            color: #1e293b !important;
+        }
+
+        .about-description {
+            font-size: 1.125rem !important;
+            line-height: 1.8 !important;
+            color: #1e293b !important;
+            margin-bottom: 1.5rem !important;
+            text-align: center !important;
+            font-weight: 400 !important;
+            font-family: 'Manrope', sans-serif !important;
+        }
+
+        .btn-meet-team {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 0.5rem !important;
+            margin-top: 0.5rem !important;
+            padding: 0.75rem 1.5rem !important;
+            border-radius: 10px !important;
+            text-decoration: none !important;
+            font-weight: 700 !important;
+            font-size: 0.95rem !important;
+            letter-spacing: 0.2px !important;
+            color: #ffffff !important;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+            box-shadow: 0 10px 22px rgba(37, 99, 235, 0.25) !important;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease !important;
+        }
+
+        .btn-meet-team:hover {
+            transform: translateY(-2px) !important;
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
+            box-shadow: 0 14px 28px rgba(37, 99, 235, 0.35) !important;
+        }
+
+        .btn-meet-team:active {
+            transform: translateY(0) !important;
+        }
+        
+        /* Nav bar proportional alignment with SERVICES OFFERED */
+        /* Both header-top-content and nav-container use max-width 1400px */
+        /* header-top-bar has padding-right: 3rem, main-nav now has padding-right: 3rem */
+        /* So nav-container aligns perfectly with header-top-content */
+        .nav-container {
+            max-width: 1400px !important;
+            margin: 0 auto !important;
+            display: flex !important;
+            justify-content: flex-end !important;
+            align-items: center !important;
+            gap: 0.5rem !important;
+            flex-wrap: wrap !important;
+            width: 100% !important;
+            box-sizing: border-box !important;
+            padding-right: 0 !important;
+        }
+        
+        /* Adjust nav container positioning for logged-in users to match header-center shift */
+        .nav-container.logged-in-user {
+            padding-right: 6rem !important;
+        }
+        
+        /* Fade-in Animation */
+        .fade-in {
+            opacity: 1 !important;
+            transform: translateY(0);
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+        
+        .fade-in.visible {
+            opacity: 1 !important;
+            transform: translateY(0);
+        }
+        
+        /* Portfolio items should always be visible */
+        .portfolio-item.fade-in {
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+        
+        /* Services Section */
+        .services-section {
+            position: relative;
+            padding: 6rem 0;
+            background-image:
+                linear-gradient(135deg, rgba(15, 23, 42, 0.75) 0%, rgba(15, 23, 42, 0.6) 40%, rgba(15, 23, 42, 0.4) 100%),
+                url("{{ asset('img/our-services-event.png') }}");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+        
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2.5rem;
+            margin-top: 3rem;
+            align-items: stretch;
+        }
+        
+        /* iOS-style frosted glass cards (see-through over hero background) */
+        .service-card {
+            position: relative;
+            background: rgba(255, 255, 255, 0.18);
+            backdrop-filter: blur(28px) saturate(180%);
+            -webkit-backdrop-filter: blur(28px) saturate(180%);
+            padding: 2.5rem;
+            border-radius: 22px;
+            text-align: center;
+            box-shadow:
+                0 8px 32px rgba(0, 0, 0, 0.12),
+                inset 0 1px 0 rgba(255, 255, 255, 0.55);
+            transition: all 0.45s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(255, 255, 255, 0.42);
+            overflow: hidden;
+        }
+
+        .service-card::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            background: linear-gradient(
+                145deg,
+                rgba(255, 255, 255, 0.35) 0%,
+                rgba(255, 255, 255, 0.05) 45%,
+                rgba(255, 255, 255, 0) 100%
+            );
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        .service-card > * {
+            position: relative;
+            z-index: 1;
+        }
+        
+        .service-card:hover {
+            transform: translateY(-10px);
+            background: rgba(255, 255, 255, 0.28);
+            box-shadow:
+                0 16px 48px rgba(0, 0, 0, 0.18),
+                inset 0 1px 0 rgba(255, 255, 255, 0.65);
+            border-color: rgba(255, 255, 255, 0.58);
+        }
+
+        a.service-card-link {
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .service-card-cta {
+            margin-top: 1.25rem;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #fbbf24;
+            letter-spacing: 0.03em;
+        }
+
+        .service-card-image {
+            width: calc(100% + 4rem);
+            height: 190px;
+            margin: -2rem -2rem 1.25rem;
+            overflow: hidden;
+            border-radius: 14px 14px 0 0;
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        .service-card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        
+        .service-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1.5rem;
+            background: linear-gradient(135deg, #b8860b 0%, #daa520 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(184, 134, 11, 0.3);
+        }
+        
+        .service-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.92);
+            margin-bottom: 1rem;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.35);
+        }
+        
+        .service-description {
+            color: rgba(255, 255, 255, 0.78);
+            line-height: 1.7;
+            font-size: 1rem;
+            text-shadow: 0 1px 8px rgba(0, 0, 0, 0.28);
+        }
+        
+        /* Portfolio Section Enhancements */
+        .portfolio-section {
+            background: #ffffff !important;
+            padding: 6rem 0 !important;
+            display: block !important;
+            width: 100% !important;
+        }
+
+        .portfolio-section .section-title {
+            color: #1e293b !important;
+        }
+        
+        #portfolio {
+            display: block !important;
+            visibility: visible !important;
+        }
+        
+        .portfolio-grid {
+            display: grid !important;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)) !important;
+            gap: 2rem !important;
+            margin-top: 3rem !important;
+            width: 100% !important;
+            min-height: 400px !important;
+        }
+
+        a.portfolio-item-link {
+            display: block !important;
+            text-decoration: none !important;
+            color: inherit !important;
+        }
+        
+        .portfolio-item {
+            position: relative !important;
+            border-radius: 8px !important;
+            overflow: hidden !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1) !important;
+            transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+            cursor: pointer !important;
+            background: #f0f0f0 !important;
+            min-height: 300px !important;
+            width: 100% !important;
+            display: block !important;
+        }
+        
+        .portfolio-item:hover {
+            transform: translateY(-5px) !important;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15) !important;
+        }
+        
+        .portfolio-image {
+            width: 100% !important;
+            height: 300px !important;
+            min-height: 300px !important;
+            overflow: hidden !important;
+            display: block !important;
+            position: relative !important;
+            background: #e0e0e0 !important;
+        }
+        
+        .portfolio-image img {
+            width: 100% !important;
+            height: 100% !important;
+            min-height: 300px !important;
+            object-fit: cover !important;
+            display: block !important;
+            transition: transform 0.3s ease !important;
+            background: #d0d0d0 !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+        
+        .portfolio-item:hover .portfolio-image img {
+            transform: scale(1.1) !important;
+        }
+        
+        .portfolio-overlay {
+            position: absolute !important;
+            bottom: 0 !important;
+            left: 0 !important;
+            right: 0 !important;
+            background: linear-gradient(to top, rgba(0, 0, 0, 0.85), transparent) !important;
+            padding: 2rem 1.5rem 1.5rem !important;
+            color: #ffffff !important;
+            transform: translateY(100%) !important;
+            transition: transform 0.3s ease !important;
+        }
+        
+        .portfolio-item:hover .portfolio-overlay {
+            transform: translateY(0) !important;
+        }
+        
+        .portfolio-overlay h3 {
+            font-size: 1.25rem !important;
+            font-weight: 600 !important;
+            margin: 0 0 0.5rem 0 !important;
+        }
+        
+        .portfolio-overlay p {
+            font-size: 0.95rem !important;
+            margin-top: 0.5rem !important;
+            opacity: 0.9 !important;
+            line-height: 1.5 !important;
+            margin: 0 !important;
+        }
+        
+        /* Testimonials Section */
+        .testimonials-section {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            padding: 6rem 0;
+            color: #ffffff;
+        }
+        
+        .testimonials-section .section-title {
+            color: #ffffff;
+        }
+        
+        /* Event Customization Section */
+        .event-customization-section {
+            position: relative;
+            background-image: url('https://images.unsplash.com/photo-1519167758481-83f550bb49b3?auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            padding: 6rem 0;
+            overflow: hidden;
+        }
+
+        .event-customization-section::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(15, 23, 42, 0.72) 0%, rgba(30, 41, 59, 0.66) 100%);
+            z-index: 0;
+        }
+
+        .event-customization-section .section-container {
+            position: relative;
+            z-index: 1;
+        }
+
+        .event-customization-section .section-title {
+            color: #ffffff;
+        }
+        
+        .customization-subtitle {
+            text-align: center;
+            font-size: 1.125rem;
+            color: #e2e8f0;
+            margin-bottom: 3rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .customization-wrapper {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        
+        .event-customization-form {
+            background: rgba(255, 255, 255, 0.14);
+            padding: 3rem;
+            border-radius: 16px;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.28);
+            box-shadow: 0 20px 50px rgba(2, 6, 23, 0.35);
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group-custom {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group-custom label {
+            display: block;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.95);
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+        }
+        
+        .form-group-custom .required {
+            color: #ef4444;
+        }
+        
+        .form-input-custom {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            border-radius: 8px;
+            font-size: 1rem;
+            color: #ffffff;
+            transition: all 0.3s ease;
+            font-family: 'Manrope', sans-serif;
+            box-sizing: border-box;
+        }
+        
+        .form-input-custom:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.75);
+            background: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.28);
+        }
+        
+        .form-input-custom::placeholder {
+            color: rgba(255, 255, 255, 0.72);
+        }
+
+        .form-input-custom option {
+            color: #0f172a;
+        }
+
+        .form-input-custom:-webkit-autofill,
+        .form-input-custom:-webkit-autofill:hover,
+        .form-input-custom:-webkit-autofill:focus {
+            -webkit-text-fill-color: #ffffff;
+            transition: background-color 9999s ease-in-out 0s;
+        }
+        
+        .btn-submit-custom {
+            width: 100%;
+            padding: 0.625rem 2rem;
+            background: linear-gradient(135deg, #b8860b 0%, #daa520 100%);
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 6px 20px rgba(184, 134, 11, 0.35), 0 2px 8px rgba(184, 134, 11, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-top: 1rem;
+            position: relative;
+            overflow: hidden;
+            height: 42px;
+            min-height: 42px;
+            box-sizing: border-box;
+            line-height: 1;
+        }
+        
+        .btn-submit-custom::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .btn-submit-custom:hover::before {
+            left: 100%;
+        }
+        
+        .btn-submit-custom:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 28px rgba(184, 134, 11, 0.45), 0 4px 12px rgba(184, 134, 11, 0.3);
+            background: linear-gradient(135deg, #daa520 0%, #b8860b 100%);
+        }
+        
+        .btn-submit-custom:active {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(184, 134, 11, 0.35);
+        }
+        
+        @media (max-width: 768px) {
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 0;
+            }
+            
+            .event-customization-form {
+                padding: 1.5rem;
+            }
+        }
+        
+        .testimonials-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .testimonial-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: all 0.4s ease;
+        }
+        
+        .testimonial-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.15);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .testimonial-rating {
+            color: #fbbf24;
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            display: flex;
+            gap: 0.25rem;
+        }
+        
+        .testimonial-text {
+            font-size: 1rem;
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
+            color: #f1f5f9;
+            font-style: italic;
+        }
+        
+        .testimonial-author {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .testimonial-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .testimonial-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .testimonial-info h4 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin: 0 0 0.25rem 0;
+            color: #ffffff;
+        }
+        
+        .testimonial-info p {
+            font-size: 0.875rem;
+            color: #cbd5e1;
+            margin: 0;
+        }
+        
+        /* Contact / CTA Section */
+        .contact-section {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 45%, #475569 100%);
+            padding: 6rem 0;
+        }
+
+        .contact-section .section-title {
+            color: #ffffff;
+        }
+        
+        .contact-subtitle {
+            text-align: center;
+            font-size: 1.25rem;
+            color: #e2e8f0;
+            margin-bottom: 3rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .contact-wrapper {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .contact-form-container {
+            background: rgba(255, 255, 255, 0.14);
+            padding: 2.5rem;
+            border-radius: 16px;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            box-shadow: 0 20px 50px rgba(2, 6, 23, 0.24);
+            position: relative;
+        }
+        
+        .contact-hp {
+            position: absolute;
+            left: -10000px;
+            width: 1px;
+            height: 1px;
+            overflow: hidden;
+        }
+        
+        .contact-embed-hint {
+            font-size: 0.95rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 1rem;
+            line-height: 1.55;
+        }
+        
+        .contact-embed-wrap {
+            width: 100%;
+            min-height: 560px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+            background: #f8fafc;
+        }
+        
+        .contact-embed-frame {
+            width: 100%;
+            min-height: 560px;
+            border: none;
+            display: block;
+        }
+        
+        .contact-form-feedback {
+            font-size: 0.9rem;
+            margin-bottom: 0.75rem;
+            color: #64748b;
+        }
+        
+        .form-group-main {
+            margin-bottom: 1.5rem;
+        }
+        
+        .form-group-main label {
+            display: block;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.95);
+            margin-bottom: 0.5rem;
+            font-size: 0.95rem;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+        }
+        
+        .form-input-main {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.35);
+            border-radius: 8px;
+            font-size: 1rem;
+            color: #ffffff;
+            transition: all 0.3s ease;
+            font-family: 'Manrope', sans-serif;
+            box-sizing: border-box;
+        }
+        
+        .form-input-main:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.75);
+            background: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.28);
+        }
+        
+        .form-input-main::placeholder {
+            color: rgba(255, 255, 255, 0.72);
+        }
+
+        .form-input-main:-webkit-autofill,
+        .form-input-main:-webkit-autofill:hover,
+        .form-input-main:-webkit-autofill:focus {
+            -webkit-text-fill-color: #ffffff;
+            transition: background-color 9999s ease-in-out 0s;
+        }
+        
+        .btn-contact-submit {
+            width: 100%;
+            padding: 0.625rem 2rem;
+            background: linear-gradient(135deg, #b8860b 0%, #daa520 100%);
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 6px 20px rgba(184, 134, 11, 0.35), 0 2px 8px rgba(184, 134, 11, 0.2);
+            position: relative;
+            overflow: hidden;
+            min-height: 42px;
+            box-sizing: border-box;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 1;
+        }
+        
+        .btn-contact-submit:disabled {
+            opacity: 0.88;
+            cursor: wait;
+        }
+        
+        .btn-contact-submit::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .btn-contact-submit:hover::before {
+            left: 100%;
+        }
+        
+        .btn-contact-submit:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 28px rgba(184, 134, 11, 0.45), 0 4px 12px rgba(184, 134, 11, 0.3);
+            background: linear-gradient(135deg, #daa520 0%, #b8860b 100%);
+        }
+        
+        .btn-contact-submit:active {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(184, 134, 11, 0.35);
+        }
+        
+        .contact-info {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+        
+        .contact-info-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 1.5rem;
+            padding: 1.5rem;
+            background: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        }
+        
+        .contact-info-item i {
+            font-size: 1.5rem;
+            color: #b8860b;
+            flex-shrink: 0;
+        }
+        
+        .contact-info-item h4 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #1e293b;
+            margin: 0 0 0.5rem 0;
+        }
+        
+        .contact-info-item p {
+            color: #64748b;
+            margin: 0;
+            font-size: 1rem;
+        }
+        
+        .contact-social {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .social-link {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #b8860b 0%, #daa520 100%);
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-decoration: none;
+            font-size: 1.25rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(184, 134, 11, 0.3);
+        }
+        
+        .social-link:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(184, 134, 11, 0.4);
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 1024px) {
+            .contact-wrapper {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+            }
+            
+            .services-grid {
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 2rem;
+            }
+        }
+        
+        /* Hero fills real viewport below fixed bar (CSS + JS; var fallback prevents collapse) */
+        :root {
+            --landing-top-h: 168px;
+            --hero-nav-gap: 28px;
+            --hero-fill-extra: 120px;
+        }
+        .hero-section {
+            margin-top: 0 !important;
+            min-height: calc(100vh - var(--landing-top-h, 168px) + var(--hero-fill-extra, 24px)) !important;
+            min-height: calc(100dvh - var(--landing-top-h, 168px) + var(--hero-fill-extra, 24px)) !important;
+        }
+        .hero-background,
+        .hero-bg-layer {
+            background-size: cover !important;
+            background-position: center center !important;
+        }
+
+        .hero-video {
+            position: absolute !important;
+            inset: 0 !important;
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: cover !important;
+            object-position: center center !important;
+            z-index: 0 !important;
+            pointer-events: none !important;
+        }
+
+        @media (max-width: 768px) {
+            :root {
+                --hero-fill-extra: 70px;
+            }
+            .services-section,
+            .portfolio-section,
+            .testimonials-section,
+            .contact-section {
+                padding: 4rem 0;
+            }
+            
+            .services-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            .testimonials-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .contact-form-container {
+                padding: 1.5rem;
+            }
+            
+            .service-card,
+            .testimonial-card {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <!-- Flash Messages -->
+    {% for message in app.flashes('error') %}
+        <div class="flash-message flash-error">
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    {% for message in app.flashes('success') %}
+        <div class="flash-message flash-success">
+            {{ message }}
+        </div>
+    {% endfor %}
+
+    <div class="landing-top">
+        <!-- Header -->
+        <header class="main-header">
+            <div class="header-top-bar">
+                <div class="header-top-content">
+                    <div class="header-logo">
+                        <a href="{{ path('app_landing') }}">
+                            <img src="{{ asset('img/logo1.png') }}" alt="Lux Events Logo">
+                            <span class="logo-text">Lux Events</span>
+                        </a>
+                    </div>
+                    <div class="header-center{% if app.user %} logged-in-user{% endif %}">
+                        <span class="services-text">SERVICES OFFERED</span>
+                    </div>
+                    <div class="header-right">
+                        <div class="header-info">
+                            <span class="info-text" id="landing-live-time">Read, --:-- | Design</span>
+                        </div>
+                        <div class="social-icons">
+                            <a href="#" class="social-icon" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
+                            <a href="#" class="social-icon" aria-label="Twitter"><i class="bi bi-twitter"></i></a>
+                            <a href="#" class="social-icon" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+                            <a href="#" class="social-icon" aria-label="Search"><i class="bi bi-search"></i></a>
+                        </div>
+                        {% if app.user %}
+                            <a href="#contact" class="btn-get-party">Get a Party</a>
+                        {% else %}
+                            <div class="auth-buttons">
+                                <a href="{{ path('app_login') }}" class="btn-login">Login</a>
+                                <a href="{{ path('app_register') }}" class="btn-register">Sign Up</a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <nav class="main-nav">
+            <div class="nav-container{% if app.user %} logged-in-user{% endif %}">
+                <a href="{{ path('app_landing') }}" class="nav-link">Home</a>
+                    <a href="{{ path('app_about') }}" class="nav-link">About Us</a>
+                <a href="#services" class="nav-link">Services</a>
+                <a href="#portfolio" class="nav-link">Portfolio</a>
+                {% if app.user %}
+                    <a href="#customize-event" class="nav-link">Customize Event</a>
+                {% else %}
+                    <a href="#testimonials" class="nav-link">Testimonials</a>
+                {% endif %}
+                <a href="#contact" class="nav-link">Contact</a>
+                {% if app.user and (is_granted('ROLE_ADMIN') or is_granted('ROLE_STAFF')) %}
+                    <a href="{% if is_granted('ROLE_ADMIN') %}{{ path('app_admin_dashboard') }}{% else %}{{ path('app_admin_profile') }}{% endif %}" class="nav-link dashboard-link">
+                        Dashboard
+                    </a>
+                {% endif %}
+                {% if app.user %}
+                    <form method="post" action="{{ path('app_logout') }}" class="logout-form-inline">
+                        <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
+                        <button type="submit" class="nav-link logout-link">Logout</button>
+                    </form>
+                {% endif %}
+            </div>
+        </nav>
+    </div>
+    <script>
+        (function () {
+            var el = document.querySelector('.landing-top');
+            if (!el) return;
+
+            var lastNavOnly = null;
+            var applyTopOffset = function () {
+                var h = Math.ceil(el.getBoundingClientRect().height);
+                document.documentElement.style.setProperty('--landing-top-h', h + 'px');
+                if (document.body) {
+                    document.body.style.paddingTop = h + 'px';
+                }
+            };
+
+            var syncTopLayout = function () {
+                var navOnly = (window.pageYOffset || document.documentElement.scrollTop || 0) > 60;
+                if (navOnly !== lastNavOnly) {
+                    el.classList.toggle('nav-only', navOnly);
+                    lastNavOnly = navOnly;
+                    // let CSS transition start, then measure resulting height
+                    window.setTimeout(applyTopOffset, 20);
+                }
+            };
+
+            var ticking = false;
+            var onScroll = function () {
+                if (ticking) return;
+                ticking = true;
+                window.requestAnimationFrame(function () {
+                    syncTopLayout();
+                    ticking = false;
+                });
+            };
+
+            applyTopOffset();
+            syncTopLayout();
+            window.addEventListener('scroll', onScroll, { passive: true });
+            window.addEventListener('resize', function () {
+                applyTopOffset();
+                syncTopLayout();
+            });
+        })();
+    </script>
+
+    <!-- Hero Section -->
+    <section class="hero-section hero-animate">
+        <div class="hero-background">
+            <video class="hero-video"
+                autoplay
+                muted
+                loop
+                playsinline
+                poster="{{ asset('img/7a42239a-ff60-4697-a65c-af925a8d9a8c.jpg') }}"
+                aria-hidden="true">
+                <source src="{{ asset('img/c680f24ea362fa0a9c531a32d560dd5f.mp4') }}" type="video/mp4">
+            </video>
+            <div class="hero-overlay"></div>
+        </div>
+        <div class="hero-content">
+            <div class="hero-left">
+                <h1 class="hero-title">Plan Your Event<br>With Us</h1>
+                <p class="hero-description">
+                    Let us turn your ideas into unforgettable moments with our hassle-free and personalized event planning services
+                </p>
+                {% if app.user %}
+                    <a href="#contact" class="btn-contact-now">Contact Now</a>
+                {% else %}
+                    <div class="hero-auth-section">
+                        <p class="auth-message">Please login or create an account to avail our services</p>
+                        <div class="hero-auth-buttons">
+                            <a href="{{ path('app_login') }}" class="btn-login-hero">Login</a>
+                            <a href="{{ path('app_register') }}" class="btn-register-hero">Create Account</a>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </section>
+    <script>
+        (function () {
+            var v = document.querySelector('.hero-video');
+            if (!v) return;
+            function ensureHeroVideoPlay() {
+                var p = v.play();
+                if (p && typeof p.catch === 'function') {
+                    p.catch(function () {});
+                }
+            }
+            v.addEventListener('canplay', ensureHeroVideoPlay, { once: true });
+            document.addEventListener('visibilitychange', function () {
+                if (!document.hidden) {
+                    ensureHeroVideoPlay();
+                }
+            });
+        })();
+    </script>
+    <script>
+        (function () {
+            var top = document.querySelector('.landing-top');
+            var hero = document.querySelector('.hero-section');
+            if (!top || !hero) return;
+            var topH = Math.ceil(top.getBoundingClientRect().height);
+            var gapStr = getComputedStyle(document.documentElement).getPropertyValue('--hero-nav-gap').trim();
+            var gap = Math.max(0, parseFloat(gapStr)) || 28;
+            var vv = window.visualViewport && window.visualViewport.height
+                ? window.visualViewport.height
+                : window.innerHeight;
+            hero.style.minHeight = Math.max(280, Math.round(vv - topH - gap)) + 'px';
+        })();
+    </script>
+
+    <!-- About Us Section -->
+    <section id="about" class="about-section">
+        <div class="section-container">
+            <h2 class="section-title">About Us</h2>
+            <div class="about-content">
+                <div class="about-text">
+                    <p class="about-description">
+                        Lux Events is a premier event planning company dedicated to creating unforgettable experiences. 
+                        With years of expertise in the industry, we specialize in transforming your vision into reality, 
+                        whether it's a wedding, corporate event, birthday celebration, or any special occasion.
+                    </p>
+                    <p class="about-description">
+                        Our team of professional event planners works tirelessly to ensure every detail is perfect, 
+                        from venue selection to decor, catering, and entertainment. We pride ourselves on delivering 
+                        exceptional service and creating memorable moments that last a lifetime.
+                    </p>
+                    <div style="text-align: center;">
+                        <a href="{{ path('app_about') }}#team" class="btn-meet-team">
+                            Meet the Team
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Services Offered Section -->
+    <section id="services" class="services-section">
+        <div class="section-container">
+            <h2 class="section-title">Our Services</h2>
+            {% if servicePackages is defined and servicePackages|length > 0 %}
+                {% if not app.user %}
+                    <p class="services-guest-hint">
+                        Browse our packages below. <a href="{{ path('app_login') }}">Sign in</a> to book online.
+                    </p>
+                {% endif %}
+                <div class="services-grid">
+                    {% for package in servicePackages %}
+                        {% include 'landing/_service_package_card.html.twig' with {
+                            package: package,
+                            card_variant: 'landing',
+                            book_href: app.user ? path('app_service_book', { id: package.id }) : path('app_login'),
+                        } %}
+                    {% endfor %}
+                </div>
+            {% else %}
+                <!-- Static Services for Non-Logged-in Users -->
+                <div class="services-grid">
+                    <div class="service-card fade-in">
+                        <div class="service-icon">
+                            <i class="bi bi-calendar-event"></i>
+                        </div>
+                        <h3 class="service-title">Event Planning</h3>
+                        <p class="service-description">Comprehensive event planning from concept to execution, ensuring every detail is perfectly orchestrated.</p>
+                    </div>
+                    <div class="service-card fade-in">
+                        <div class="service-icon">
+                            <i class="bi bi-palette"></i>
+                        </div>
+                        <h3 class="service-title">Event Styling</h3>
+                        <p class="service-description">Transform your vision into reality with our creative styling and design expertise.</p>
+                    </div>
+                    <div class="service-card fade-in">
+                        <div class="service-icon">
+                            <i class="bi bi-building"></i>
+                        </div>
+                        <h3 class="service-title">Venue Selection</h3>
+                        <p class="service-description">Find the perfect venue that matches your style and accommodates your guests perfectly.</p>
+                    </div>
+                    <div class="service-card fade-in">
+                        <div class="service-icon">
+                            <i class="bi bi-cup-straw"></i>
+                        </div>
+                        <h3 class="service-title">Catering Arrangement</h3>
+                        <p class="service-description">Exquisite culinary experiences tailored to your preferences and dietary requirements.</p>
+                    </div>
+                    <div class="service-card fade-in">
+                        <div class="service-icon">
+                            <i class="bi bi-camera-video"></i>
+                        </div>
+                        <h3 class="service-title">Photography/Videography</h3>
+                        <p class="service-description">Capture every precious moment with our professional photography and videography services.</p>
+                    </div>
+                    <div class="service-card fade-in">
+                        <div class="service-icon">
+                            <i class="bi bi-diagram-3"></i>
+                        </div>
+                        <h3 class="service-title">Event Coordination</h3>
+                        <p class="service-description">Seamless on-the-day coordination to ensure your event runs flawlessly.</p>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </section>
+
+    <!-- Portfolio Section -->
+    <section id="portfolio" class="portfolio-section">
+        <div class="section-container">
+            <h2 class="section-title">Our Portfolio</h2>
+            <div class="portfolio-grid">
+                <a href="{{ path('app_portfolio') }}" class="portfolio-item-link" aria-label="Open full portfolio — Elegant Wedding Reception">
+                <div class="portfolio-item fade-in">
+                    <div class="portfolio-image">
+                        <img src="https://i.pinimg.com/736x/f0/7d/96/f07d96670ccf8acd5aea53f2dbf2c13d.jpg" alt="Elegant Wedding Reception" onerror="this.src='https://via.placeholder.com/800x600/B8860B/FFFFFF?text=Wedding+Reception'">
+                    </div>
+                    <div class="portfolio-overlay">
+                        <h3>Elegant Wedding Reception</h3>
+                        <p>Grand celebration with stunning decorations</p>
+                    </div>
+                </div>
+                </a>
+                <a href="{{ path('app_portfolio') }}" class="portfolio-item-link" aria-label="Open full portfolio — Romantic Wedding Ceremony">
+                <div class="portfolio-item fade-in">
+                    <div class="portfolio-image">
+                        <img src="https://images.unsplash.com/photo-1465495976277-4387d4b0b4c6?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600&q=80" alt="Romantic Wedding Ceremony" onerror="this.src='https://via.placeholder.com/800x600/1e293b/FFFFFF?text=Wedding+Ceremony'">
+                    </div>
+                    <div class="portfolio-overlay">
+                        <h3>Romantic Wedding Ceremony</h3>
+                        <p>Beautiful outdoor wedding ceremony</p>
+                    </div>
+                </div>
+                </a>
+                <a href="{{ path('app_portfolio') }}" class="portfolio-item-link" aria-label="Open full portfolio — Stunning Wedding Decoration">
+                <div class="portfolio-item fade-in">
+                    <div class="portfolio-image">
+                        <img src="https://images.unsplash.com/photo-1511795409834-ef04bbd61622?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600&q=80" alt="Stunning Wedding Decoration" onerror="this.src='https://via.placeholder.com/800x600/B8860B/FFFFFF?text=Wedding+Decoration'">
+                    </div>
+                    <div class="portfolio-overlay">
+                        <h3>Stunning Wedding Decoration</h3>
+                        <p>Exquisite floral arrangements and styling</p>
+                    </div>
+                </div>
+                </a>
+                <a href="{{ path('app_portfolio') }}" class="portfolio-item-link" aria-label="Open full portfolio — Colorful Birthday Celebration">
+                <div class="portfolio-item fade-in">
+                    <div class="portfolio-image">
+                        <img src="https://i.pinimg.com/736x/9e/34/f9/9e34f9894ea2c731a3158422d7227fab.jpg" alt="Colorful Birthday Celebration" onerror="this.src='https://via.placeholder.com/800x600/daa520/FFFFFF?text=Birthday+Party'">
+                    </div>
+                    <div class="portfolio-overlay">
+                        <h3>Colorful Birthday Celebration</h3>
+                        <p>Vibrant birthday party with themed decorations</p>
+                    </div>
+                </div>
+                </a>
+                <a href="{{ path('app_portfolio') }}" class="portfolio-item-link" aria-label="Open full portfolio — Fun Birthday Celebration">
+                <div class="portfolio-item fade-in">
+                    <div class="portfolio-image">
+                        <img src="https://images.unsplash.com/photo-1530103862676-de8c9debad1d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600&q=80" alt="Fun Birthday Celebration" onerror="this.src='https://via.placeholder.com/800x600/1e293b/FFFFFF?text=Birthday+Party'">
+                    </div>
+                    <div class="portfolio-overlay">
+                        <h3>Fun Birthday Celebration</h3>
+                        <p>Joyful birthday party with decorations and cake</p>
+                    </div>
+                </div>
+                </a>
+                <a href="{{ path('app_portfolio') }}" class="portfolio-item-link" aria-label="Open full portfolio — Beautiful Birthday Setup">
+                <div class="portfolio-item fade-in">
+                    <div class="portfolio-image">
+                        <img src="https://images.unsplash.com/photo-1606983340126-99ab4feaa64a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&h=600&q=80" alt="Beautiful Birthday Setup" onerror="this.src='https://via.placeholder.com/800x600/B8860B/FFFFFF?text=Birthday+Setup'">
+                    </div>
+                    <div class="portfolio-overlay">
+                        <h3>Beautiful Birthday Setup</h3>
+                        <p>Picture-perfect birthday event arrangement</p>
+                    </div>
+                </div>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    {% if not app.user %}
+        <!-- Testimonials Section (only for non-logged-in users) -->
+        <section id="testimonials" class="testimonials-section">
+            <div class="section-container">
+                <h2 class="section-title">What Our Clients Say</h2>
+                <div class="testimonials-grid">
+                    <div class="testimonial-card fade-in">
+                        <div class="testimonial-rating">
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                        </div>
+                        <p class="testimonial-text">"Lux Events transformed our wedding into an absolute dream. Every detail was perfect, and the team's attention to our vision was exceptional."</p>
+                        <div class="testimonial-author">
+                            <div class="testimonial-avatar">
+                                <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&fit=crop&crop=faces" alt="Sarah Johnson">
+                            </div>
+                            <div class="testimonial-info">
+                                <h4>Sarah Johnson</h4>
+                                <p>Wedding Client</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="testimonial-card fade-in">
+                        <div class="testimonial-rating">
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                        </div>
+                        <p class="testimonial-text">"The most professional and creative event planning team we've ever worked with. Our birthday celebration was flawless from start to finish."</p>
+                        <div class="testimonial-author">
+                            <div class="testimonial-avatar">
+                                <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=faces" alt="Michael Chen">
+                            </div>
+                            <div class="testimonial-info">
+                                <h4>Michael Chen</h4>
+                                <p>Birthday Celebration</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="testimonial-card fade-in">
+                        <div class="testimonial-rating">
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                        </div>
+                        <p class="testimonial-text">"Exceeded all expectations! Lux Events made our special day absolutely magical. The coordination was seamless and stress-free."</p>
+                        <div class="testimonial-author">
+                            <div class="testimonial-avatar">
+                                <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=faces" alt="Emily Rodriguez">
+                            </div>
+                            <div class="testimonial-info">
+                                <h4>Emily Rodriguez</h4>
+                                <p>Wedding Client</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="testimonial-card fade-in">
+                        <div class="testimonial-rating">
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                            <i class="bi bi-star-fill"></i>
+                        </div>
+                        <p class="testimonial-text">"Outstanding service and beautiful execution. The team understood our vision and brought it to life beyond what we imagined possible."</p>
+                        <div class="testimonial-author">
+                            <div class="testimonial-avatar">
+                                <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=faces" alt="David Thompson">
+                            </div>
+                            <div class="testimonial-info">
+                                <h4>David Thompson</h4>
+                                <p>Anniversary Event</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    {% else %}
+        <!-- Event Customization Section (for logged-in users) -->
+        <section id="customize-event" class="event-customization-section">
+            <div class="section-container">
+                <h2 class="section-title">Customize Your Event</h2>
+                <p class="customization-subtitle">Tell us about your dream event and we'll make it happen</p>
+                <div class="customization-wrapper fade-in">
+                    <form method="POST" action="{{ path('app_landing') }}" class="event-customization-form">
+                        <input type="hidden" name="_token" value="{{ csrf_token('event_request') }}">
+                        <div class="form-row">
+                            <div class="form-group-custom">
+                                <label for="eventType">Event Type <span class="required">*</span></label>
+                                <select id="eventType" name="eventType" class="form-input-custom" required>
+                                    <option value="">Select event type</option>
+                                    <option value="Wedding">Wedding</option>
+                                    <option value="Birthday">Birthday</option>
+                                </select>
+                            </div>
+                            <div class="form-group-custom">
+                                <label for="preferredDate">Preferred Date</label>
+                                <input type="date" id="preferredDate" name="preferredDate" class="form-input-custom" min="{{ 'now'|date('Y-m-d') }}">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group-custom">
+                                <label for="guestCount">Estimated Guest Count</label>
+                                <input type="number" id="guestCount" name="guestCount" class="form-input-custom" min="1" step="1" inputmode="numeric" data-numeric-only="integer" placeholder="e.g. 50" autocomplete="off">
+                            </div>
+                            <div class="form-group-custom">
+                                <label for="budget">Budget Range</label>
+                                <input type="text" id="budget" name="budget" class="form-input-custom" inputmode="decimal" data-numeric-only="money-text" placeholder="e.g. 5000 - 15000" autocomplete="off">
+                            </div>
+                        </div>
+                        <div class="form-group-custom">
+                            <label for="venue">Preferred Venue</label>
+                            <input type="text" id="venue" name="venue" class="form-input-custom" placeholder="Describe your preferred venue or location">
+                        </div>
+                        <div class="form-group-custom">
+                            <label for="theme">Theme/Style</label>
+                            <input type="text" id="theme" name="theme" class="form-input-custom" placeholder="e.g., Elegant, Rustic, Modern, Vintage">
+                        </div>
+                        <div class="form-group-custom">
+                            <label for="specialRequests">Special Requests & Details</label>
+                            <textarea id="specialRequests" name="specialRequests" class="form-input-custom" rows="5" placeholder="Tell us about any specific requirements, preferences, or special details for your event..."></textarea>
+                        </div>
+                        <button type="submit" class="btn-submit-custom">
+                            <i class="bi bi-send-fill"></i> Send Request to Admin
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </section>
+    {% endif %}
+
+    <!-- Contact / CTA Section -->
+    <section id="contact" class="contact-section">
+        <div class="section-container">
+            <h2 class="section-title">Let's Start Planning Your Event</h2>
+            <p class="contact-subtitle">Get in touch with us today and let's create an unforgettable experience together</p>
+            <div class="contact-wrapper">
+                <div class="contact-form-container fade-in">
+                    {% if contactFormEmbedUrl is defined and contactFormEmbedUrl|trim != '' %}
+                        <p class="contact-embed-hint">Submit the form below — you will see a confirmation from the form provider when it is received.</p>
+                        <div class="contact-embed-wrap">
+                            <iframe
+                                class="contact-embed-frame"
+                                src="{{ contactFormEmbedUrl }}"
+                                title="Contact Lux Events"
+                                loading="lazy"
+                                referrerpolicy="no-referrer-when-downgrade"
+                            ></iframe>
+                        </div>
+                    {% else %}
+                    <form id="contact-form-main" class="contact-form-main" method="POST" action="{{ path('app_landing') }}" novalidate>
+                        <input type="hidden" name="_csrf_token" value="{{ csrf_token('contact') }}">
+                        <div class="contact-hp" aria-hidden="true">
+                            <label for="contact-website">Leave blank</label>
+                            <input type="text" id="contact-website" name="website" value="" tabindex="-1" autocomplete="off">
+                        </div>
+                        <div class="form-group-main">
+                            <label for="contact-name">Name</label>
+                            <input type="text" id="contact-name" name="name" class="form-input-main" placeholder="Your full name" required maxlength="120">
+                        </div>
+                        <div class="form-group-main">
+                            <label for="contact-email">Email</label>
+                            <input type="email" id="contact-email" name="email" class="form-input-main" placeholder="your.email@example.com" required maxlength="254">
+                        </div>
+                        <div class="form-group-main">
+                            <label for="contact-message">Message</label>
+                            <textarea id="contact-message" name="message" class="form-input-main" rows="5" placeholder="Tell us about your event..." required maxlength="5000"></textarea>
+                        </div>
+                        <p class="contact-form-feedback" id="contact-form-status" role="status" aria-live="polite" hidden></p>
+                        <button type="submit" class="btn-contact-submit" id="contact-submit-btn">
+                            <span class="btn-contact-label">Send Message</span>
+                            <span class="btn-contact-loading" hidden>Sending…</span>
+                        </button>
+                    </form>
+                    {% endif %}
+                </div>
+                <div class="contact-info fade-in">
+                    <div class="contact-info-item">
+                        <i class="bi bi-envelope-fill"></i>
+                        <div>
+                            <h4>Email</h4>
+                            <p>L&LEvents@gmail.com</p>
+                        </div>
+                    </div>
+                    <div class="contact-info-item">
+                        <i class="bi bi-telephone-fill"></i>
+                        <div>
+                            <h4>Phone</h4>
+                            <p>+1 (555) 123-4567</p>
+                        </div>
+                    </div>
+                    <div class="contact-info-item">
+                        <i class="bi bi-geo-alt-fill"></i>
+                        <div>
+                            <h4>Location</h4>
+                            <p>123 Event Planning Ave, City, State 12345</p>
+                        </div>
+                    </div>
+                    <div class="contact-social">
+                        <a href="#" class="social-link" aria-label="Facebook"><i class="bi bi-facebook"></i></a>
+                        <a href="#" class="social-link" aria-label="Instagram"><i class="bi bi-instagram"></i></a>
+                        <a href="#" class="social-link" aria-label="Twitter"><i class="bi bi-twitter"></i></a>
+                        <a href="#" class="social-link" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="main-footer">
+        <div class="footer-content">
+            <p>&copy; {{ "now"|date("Y") }} Lux Events. All rights reserved.</p>
+        </div>
+    </footer>
+{% endblock %}
+
+{% block javascripts %}
+    {% block importmap %}{{ importmap('app') }}{% endblock %}
+    <script>
+        // Immediate style fix - runs before DOM is ready
+        (function() {
+            // Remove any admin container classes that might interfere
+            if (document.documentElement) {
+                document.documentElement.classList.remove('admin-page');
+                document.documentElement.style.cssText = 'overflow-x: hidden !important; overflow-y: auto !important; height: auto !important;';
+            }
+            if (document.body) {
+                document.body.classList.remove('admin-container');
+                document.body.style.cssText = 'font-family: Manrope, sans-serif !important; background-color: #ffffff !important; color: #1e293b !important; margin: 0 !important; padding: 0 !important; overflow-x: hidden !important; overflow-y: auto !important; height: auto !important; min-height: 100vh !important; position: relative !important;';
+            }
+        })();
+
+        // Function to fix scrolling issues
+        function fixScrolling() {
+            // Ensure html and body allow scrolling
+            if (document.documentElement) {
+                document.documentElement.style.overflowX = 'hidden';
+                document.documentElement.style.overflowY = 'auto';
+                document.documentElement.style.height = 'auto';
+                document.documentElement.classList.remove('admin-page');
+            }
+            if (document.body) {
+                document.body.style.overflowX = 'hidden';
+                document.body.style.overflowY = 'auto';
+                document.body.style.height = 'auto';
+                document.body.style.minHeight = '100vh';
+                document.body.style.position = 'static';
+                document.body.classList.remove('admin-container');
+            }
+            
+            // Don't override CSS sticky positioning - let CSS handle it
+        }
+        
+        // Fix scrolling immediately
+        fixScrolling();
+        
+        // Auto-hide flash messages and fix navigation
+        document.addEventListener('DOMContentLoaded', function() {
+            // Fix scrolling on DOM ready
+            fixScrolling();
+
+            // Fixed wrapper (header + nav as a single unit)
+            const topEl = document.querySelector('.landing-top');
+            function sizeLandingHero() {
+                const hero = document.querySelector('.hero-section');
+                if (!hero || !topEl) return;
+                const topH = Math.ceil(topEl.getBoundingClientRect().height);
+                const gapStr = getComputedStyle(document.documentElement).getPropertyValue('--hero-nav-gap').trim();
+                const gap = Math.max(0, parseFloat(gapStr)) || 28;
+                const vv = window.visualViewport && window.visualViewport.height
+                    ? window.visualViewport.height
+                    : window.innerHeight;
+                hero.style.minHeight = Math.max(280, Math.round(vv - topH - gap)) + 'px';
+            }
+            const setTopPadding = () => {
+                const topH = topEl ? Math.ceil(topEl.getBoundingClientRect().height) : 176;
+                if (document.body) {
+                    document.body.style.paddingTop = `${topH}px`;
+                }
+                document.documentElement.style.setProperty('--landing-top-h', `${topH}px`);
+                sizeLandingHero();
+            };
+            setTopPadding();
+            window.addEventListener('resize', setTopPadding);
+            window.setTimeout(setTopPadding, 200);
+            window.setTimeout(setTopPadding, 800);
+            window.addEventListener('load', function () {
+                requestAnimationFrame(function () {
+                    sizeLandingHero();
+                    requestAnimationFrame(sizeLandingHero);
+                });
+            });
+            if (window.visualViewport) {
+                window.visualViewport.addEventListener('resize', sizeLandingHero);
+            }
+
+            // Smooth hero background slideshow (3s per image)
+            const heroLayerA = document.querySelector('.hero-bg-layer[data-hero-layer="a"]');
+            const heroLayerB = document.querySelector('.hero-bg-layer[data-hero-layer="b"]');
+            const heroImages = [
+                // Landing hero slideshow (user-provided curated images)
+                "{{ asset('img/7a42239a-ff60-4697-a65c-af925a8d9a8c.jpg') }}",
+                "{{ asset('img/36c2e3ca-0b4f-4dd7-8673-3776559757f9.jpg') }}",
+                "{{ asset('img/740efeff-4868-46fd-8878-ee9bd2acff58.jpg') }}",
+                "{{ asset('img/754e11f3-b98a-43ab-9de0-f985a2c0b73d.jpg') }}",
+                "{{ asset('img/5846b9a4-8df3-41ad-9c07-a07915a564ee.jpg') }}",
+                "{{ asset('img/7363b3de-2e89-40f5-89de-31f63980d295.jpg') }}",
+                "{{ asset('img/b6de7a81-a844-49fe-9a20-7582386a7a42.jpg') }}",
+                "{{ asset('img/c38db778-7662-4d48-a839-074de2884384.jpg') }}",
+            ];
+
+            if (heroLayerA && heroLayerB && heroImages.length > 0) {
+                let currentLayer = heroLayerA;
+                let nextLayer = heroLayerB;
+                let idx = 0;
+
+                const setBg = (el, url) => {
+                    el.style.backgroundImage = `url("${url}")`;
+                };
+
+                // Reset any previous timer (important when revisiting via Turbo/back cache)
+                if (window.__landingHeroTimer) {
+                    clearInterval(window.__landingHeroTimer);
+                }
+
+                // Initialize first visible image immediately
+                setBg(currentLayer, heroImages[idx]);
+                currentLayer.classList.add('is-visible');
+
+                // Warm up cache in background, but never block transitions on loading
+                heroImages.forEach((url) => {
+                    const img = new Image();
+                    img.src = url;
+                });
+
+                window.__landingHeroTimer = window.setInterval(() => {
+                    idx = (idx + 1) % heroImages.length;
+                    setBg(nextLayer, heroImages[idx]);
+
+                    // Force reflow so opacity transition always fires
+                    void nextLayer.offsetWidth;
+                    nextLayer.classList.add('is-visible');
+                    currentLayer.classList.remove('is-visible');
+
+                    const tmp = currentLayer;
+                    currentLayer = nextLayer;
+                    nextLayer = tmp;
+                }, 3500);
+            }
+
+            // Prevent selecting past dates in Preferred Date
+            const preferredDateInput = document.getElementById('preferredDate');
+            if (preferredDateInput && preferredDateInput.type === 'date') {
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                const yyyy = today.getFullYear();
+                const mm = String(today.getMonth() + 1).padStart(2, '0');
+                const dd = String(today.getDate()).padStart(2, '0');
+                const minDate = `${yyyy}-${mm}-${dd}`;
+                preferredDateInput.min = minDate;
+                if (preferredDateInput.value && preferredDateInput.value < minDate) {
+                    preferredDateInput.value = '';
+                }
+            }
+
+            const contactForm = document.getElementById('contact-form-main');
+            const contactSubmitBtn = document.getElementById('contact-submit-btn');
+            if (contactForm && contactSubmitBtn) {
+                const labelEl = contactSubmitBtn.querySelector('.btn-contact-label');
+                const loadingEl = contactSubmitBtn.querySelector('.btn-contact-loading');
+                contactForm.addEventListener('submit', function () {
+                    contactSubmitBtn.disabled = true;
+                    if (labelEl) labelEl.hidden = true;
+                    if (loadingEl) loadingEl.hidden = false;
+                });
+            }
+            
+            // Get header reference for scroll detection (don't override positioning)
+            const header = document.querySelector('.main-header');
+            
+            // Scroll to top when page loads (handles back navigation)
+            window.scrollTo(0, 0);
+            
+            // Handle browser back/forward navigation
+            window.addEventListener('pageshow', function(event) {
+                // If page was loaded from cache (back/forward navigation)
+                if (event.persisted) {
+                    fixScrolling();
+                    window.scrollTo(0, 0);
+                    triggerHeroHomeAnimation();
+                }
+            });
+            // Don't override CSS - let CSS handle header styling
+            const nav = document.querySelector('.main-nav');
+            const headerTopBar = document.querySelector('.header-top-bar');
+            const headerTopContent = document.querySelector('.header-top-content');
+            const navContainer = document.querySelector('.nav-container');
+            const navLinks = document.querySelectorAll('.nav-link');
+            
+            if (nav) {
+                // Nav/header are fixed via .landing-top; don't override nav positioning here
+                nav.style.cssText = 'background: linear-gradient(135deg, #1e293b 0%, #334155 100%) !important; width: 100% !important; margin: 0 !important; padding: 1rem 2rem !important; display: block !important;';
+            }
+            if (headerTopBar) {
+                headerTopBar.style.cssText = 'padding: 0.75rem 2rem !important; padding-left: 3rem !important; padding-right: 3rem !important; border-bottom: none !important; width: 100% !important; margin: 0 !important; box-sizing: border-box !important; display: flex !important; align-items: center !important; min-height: 84px !important;';
+            }
+            if (headerTopContent) {
+                headerTopContent.style.cssText = 'max-width: 1400px !important; margin: 0 auto !important; display: flex !important; justify-content: space-between !important; align-items: center !important; gap: 2rem !important; width: 100% !important; box-sizing: border-box !important;';
+            }
+            if (navContainer) {
+                // Check if user is logged in by looking for logged-in-user class or checking if certain elements exist
+                const isLoggedIn = navContainer.classList.contains('logged-in-user') || 
+                                   document.querySelector('.btn-get-party') !== null ||
+                                   document.querySelector('.dashboard-link') !== null;
+                
+                const paddingRight = isLoggedIn ? '6rem' : '0';
+                navContainer.style.cssText = 'max-width: 1400px !important; margin: 0 auto !important; display: flex !important; justify-content: flex-end !important; align-items: center !important; gap: 0.5rem !important; flex-wrap: wrap !important; width: 100% !important; box-sizing: border-box !important; padding-right: ' + paddingRight + ' !important;';
+                
+                // Ensure the logged-in-user class is applied if user is logged in
+                if (isLoggedIn && !navContainer.classList.contains('logged-in-user')) {
+                    navContainer.classList.add('logged-in-user');
+                }
+            }
+            if (navLinks && navLinks.length > 0) {
+                navLinks.forEach(function(link) {
+                    link.style.cssText = 'color: #cbd5e1 !important; text-decoration: none !important; font-size: 0.9rem !important; font-weight: 600 !important; padding: 0.625rem 1.25rem !important; border-radius: 8px !important; display: inline-flex !important; align-items: center !important; gap: 0.5rem !important; background: transparent !important; border: none !important; cursor: pointer !important; font-family: Manrope, sans-serif !important; letter-spacing: 0.2px !important;';
+                });
+            }
+            
+            // Ensure auth buttons are perfectly aligned
+            const authButtons = document.querySelector('.auth-buttons');
+            if (authButtons) {
+                authButtons.style.cssText = 'display: flex !important; align-items: center !important; gap: 0.75rem !important;';
+            }
+            
+            // Professional button styles are handled by CSS - no need to override with inline styles
+            
+            // Ensure logo is properly sized and styled
+            const logoLink = document.querySelector('.header-logo a');
+            const logoImg = document.querySelector('.header-logo img');
+            const logoText = document.querySelector('.logo-text');
+            const headerLogo = document.querySelector('.header-logo');
+            const headerRight = document.querySelector('.header-right');
+            
+            if (headerLogo) {
+                headerLogo.style.cssText = 'display: flex !important; align-items: center !important; gap: 0.75rem !important; margin-left: -8rem !important; padding-left: 0 !important;';
+            }
+            if (headerRight) {
+                headerRight.style.cssText = 'display: flex !important; align-items: center !important; gap: 1.5rem !important; flex-wrap: wrap !important; margin-right: -8rem !important; padding-right: 0 !important;';
+            }
+            if (logoLink) {
+                logoLink.style.cssText = 'display: flex !important; align-items: center !important; gap: 0.75rem !important; text-decoration: none !important; color: #ffffff !important; transition: all 0.3s ease !important; padding: 0.25rem !important; border-radius: 8px !important;';
+            }
+            if (logoImg) {
+                logoImg.style.cssText = 'height: 64px !important; width: auto !important; transition: all 0.3s ease !important; filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4)) drop-shadow(0 0 8px rgba(255, 255, 255, 0.2)) !important; background: rgba(255, 255, 255, 0.05) !important; padding: 0.35rem !important; border-radius: 12px !important; backdrop-filter: blur(5px) !important;';
+            }
+            if (logoText) {
+                logoText.style.cssText = 'font-family: Playfair Display, serif !important; font-size: 2.25rem !important; font-weight: 700 !important; letter-spacing: 1px !important; color: #ffffff !important; transition: all 0.3s ease !important; text-shadow: 0 3px 8px rgba(0, 0, 0, 0.4), 0 0 12px rgba(255, 255, 255, 0.15) !important;';
+            }
+            
+            // Removed MutationObserver - let CSS handle header styling naturally
+
+            // Auto-hide flash messages after 5s, slide out to the right (see landing.css)
+            scheduleFlashDismissals();
+
+            // Header scroll effect - header already declared above
+            // Set active navigation link
+            const currentPath = window.location.pathname;
+            const navLinksForActiveState = document.querySelectorAll('.nav-link');
+            
+            navLinksForActiveState.forEach(function(link) {
+                const linkPath = new URL(link.href).pathname;
+                if (linkPath === currentPath || (currentPath === '/' && linkPath.includes('landing'))) {
+                    link.classList.add('active');
+                }
+            });
+
+            // Smooth scrolling for anchor links with fixed header+nav wrapper offset
+            document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
+                anchor.addEventListener('click', function(e) {
+                    const href = this.getAttribute('href');
+                    if (href !== '#' && href.length > 1) {
+                        e.preventDefault();
+                        const target = document.querySelector(href);
+                        if (target) {
+                            const offset = topEl ? topEl.offsetHeight : 0;
+                            const targetPosition = target.getBoundingClientRect().top + window.pageYOffset - offset;
+                            window.scrollTo({
+                                top: targetPosition,
+                                behavior: 'smooth'
+                            });
+                        }
+                    }
+                });
+            });
+            
+            function handleScroll() {
+                const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
+
+                if (topEl) {
+                    const shouldShowNavOnly = currentScroll > 60;
+                    const hasNavOnly = topEl.classList.contains('nav-only');
+
+                    if (shouldShowNavOnly !== hasNavOnly) {
+                        topEl.classList.toggle('nav-only', shouldShowNavOnly);
+                        // Recalculate body offset whenever header/nav visibility mode changes.
+                        setTopPadding();
+                    }
+                }
+            }
+            
+            // Throttle scroll event for better performance
+            let ticking = false;
+            window.addEventListener('scroll', function() {
+                if (!ticking) {
+                    window.requestAnimationFrame(function() {
+                        handleScroll();
+                        ticking = false;
+                    });
+                    ticking = true;
+                }
+            });
+            
+            // Check initial scroll position
+            handleScroll();
+        });
+        
+        // Reapply styles when page becomes visible (handles navigation from dashboard)
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden) {
+                fixScrolling();
+                applyNavBarStyling();
+                // Let CSS handle header positioning - don't override with inline styles
+            }
+        });
+        
+        // Reapply styles on window focus (handles tab switching)
+        window.addEventListener('focus', function() {
+            fixScrolling();
+            applyNavBarStyling();
+            // Let CSS handle header positioning - don't override with inline styles
+        });
+        
+        // Function to apply navigation bar styling
+        function applyNavBarStyling() {
+            const navContainer = document.querySelector('.nav-container');
+            if (navContainer) {
+                // Check if user is logged in
+                const isLoggedIn = navContainer.classList.contains('logged-in-user') || 
+                                   document.querySelector('.btn-get-party') !== null ||
+                                   document.querySelector('.dashboard-link') !== null ||
+                                   document.querySelector('.header-center.logged-in-user') !== null;
+                
+                const paddingRight = isLoggedIn ? '6rem' : '0';
+                navContainer.style.cssText = 'max-width: 1400px !important; margin: 0 auto !important; display: flex !important; justify-content: flex-end !important; align-items: center !important; gap: 0.5rem !important; flex-wrap: wrap !important; width: 100% !important; box-sizing: border-box !important; padding-right: ' + paddingRight + ' !important;';
+                
+                // Ensure the logged-in-user class is applied if user is logged in
+                if (isLoggedIn) {
+                    navContainer.classList.add('logged-in-user');
+                } else {
+                    navContainer.classList.remove('logged-in-user');
+                }
+            }
+        }
+
+        function triggerHeroHomeAnimation() {
+            const heroSection = document.querySelector('.hero-section');
+            if (!heroSection) return;
+            heroSection.classList.remove('hero-animate');
+            void heroSection.offsetWidth;
+            heroSection.classList.add('hero-animate');
+        }
+        
+        var FLASH_DISPLAY_MS = 5000;
+        var FLASH_EXIT_ANIM_MS = 450;
+
+        /** One 5s timer per toast; slide in/out via CSS (landing.css). Safe to call multiple times. */
+        function scheduleFlashDismissals() {
+            document.querySelectorAll('.flash-message:not([data-flash-scheduled])').forEach(function(message) {
+                message.setAttribute('data-flash-scheduled', '1');
+                setTimeout(function() {
+                    message.classList.add('slide-out');
+                    setTimeout(function() {
+                        if (message.parentNode) {
+                            message.remove();
+                        }
+                    }, FLASH_EXIT_ANIM_MS);
+                }, FLASH_DISPLAY_MS);
+            });
+        }
+        
+        // Handle Turbo navigation events
+        if (typeof Turbo !== 'undefined') {
+            document.addEventListener('turbo:load', function() {
+                fixScrolling();
+                window.scrollTo(0, 0);
+                applyNavBarStyling();
+                scheduleFlashDismissals();
+                triggerHeroHomeAnimation();
+            });
+            
+            document.addEventListener('turbo:render', function() {
+                fixScrolling();
+                window.scrollTo(0, 0);
+                applyNavBarStyling();
+                scheduleFlashDismissals();
+                triggerHeroHomeAnimation();
+            });
+            
+            document.addEventListener('turbo:frame-load', function() {
+                fixScrolling();
+                applyNavBarStyling();
+                scheduleFlashDismissals();
+                triggerHeroHomeAnimation();
+            });
+            
+            document.addEventListener('turbo:before-cache', function() {
+                // Reset before navigation away
+            });
+        }
+        
+        // Ensure scroll position is reset on page load
+        window.addEventListener('load', function() {
+            fixScrolling();
+            window.scrollTo(0, 0);
+            applyNavBarStyling();
+            scheduleFlashDismissals();
+            triggerHeroHomeAnimation();
+        });
+        
+        // Apply styling immediately on script execution
+        applyNavBarStyling();
+        
+        scheduleFlashDismissals();
+        triggerHeroHomeAnimation();
+        
+        // Fade-in Animation on Scroll
+        function animateOnScroll() {
+            const fadeElements = document.querySelectorAll('.fade-in');
+            const windowHeight = window.innerHeight;
+            
+            fadeElements.forEach(function(element) {
+                const elementTop = element.getBoundingClientRect().top;
+                const elementVisible = 150;
+                
+                if (elementTop < windowHeight - elementVisible) {
+                    element.classList.add('visible');
+                }
+            });
+        }
+        
+        // Run animation on scroll
+        window.addEventListener('scroll', animateOnScroll);
+        // Run once on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            animateOnScroll();
+            // Trigger after a short delay to ensure elements are rendered
+            setTimeout(animateOnScroll, 100);
+        });
+        
+        // Also trigger on page load
+        window.addEventListener('load', function() {
+            setTimeout(animateOnScroll, 200);
+        });
+
+        // Keep the header time in sync with the user's local clock.
+        function updateLandingHeaderTime() {
+            const liveTimeElement = document.getElementById('landing-live-time');
+            if (!liveTimeElement) {
+                return;
+            }
+
+            const now = new Date();
+            const formattedTime = now.toLocaleTimeString([], {
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            liveTimeElement.textContent = `Read, ${formattedTime} | Design`;
+        }
+
+        updateLandingHeaderTime();
+        window.setInterval(updateLandingHeaderTime, 1000);
+    </script>
+{% endblock %}

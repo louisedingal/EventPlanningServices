@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Theme - Lux Events{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('styles/admin.css') }}">
+{% endblock %}
+
+{% block body %}
+<div class="admin-container">
+    {% include 'admin/_sidebar.html.twig' %}
+    <main class="main-content">
+        {% include 'admin/_header.html.twig' with {title: 'Edit Theme'} %}
+
+        <div class="form-card">
+            <div class="form-header">
+                <h3>Edit Theme</h3>
+                <a href="{{ path('app_theme_index') }}" class="view-all-link">← Back to list</a>
+            </div>
+            <div class="form-content">
+                {% include 'theme/_form.html.twig' with {
+                    form: form,
+                    theme: theme,
+                    submit_label: 'Update Theme',
+                } %}
+
+                <form method="post" action="{{ path('app_theme_delete', {id: theme.id}) }}" onsubmit="return confirm('Are you sure you want to delete this item?');" style="margin-top:12px;">
+                    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ theme.id) }}">
+                    <button class="btn-secondary" type="submit">Delete</button>
+                </form>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

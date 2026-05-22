@@ -1,0 +1,79 @@
+{# route_name: Symfony request attribute _route (replaces non-standard app.current_route) #}
+{% set route_name = app.request.attributes.get('_route')|default('') %}
+<aside class="sidebar">
+    <div class="sidebar-header">
+        <a href="{{ path('app_landing') }}" class="logo-section" title="Go to Home">
+            <div class="logo-square">
+                <img src="{{ asset('img/logo1.png') }}" alt="Lux Events" class="logo-img">
+            </div>
+            <span class="brand-name">Lux Events</span>
+        </a>
+    </div>
+    <nav class="sidebar-nav">
+        {% if is_granted('ROLE_ADMIN') %}
+            <a href="{{ path('app_admin_dashboard') }}" class="nav-item {{ route_name == 'app_admin_dashboard' ? 'active' : '' }}">
+                <i class="bi bi-speedometer2 nav-icon"></i>
+                Dashboard
+            </a>
+            <a href="{{ path('app_user_index') }}" class="nav-item {{ route_name starts with 'app_user' ? 'active' : '' }}">
+                <i class="bi bi-people nav-icon"></i>
+                User Management
+            </a>
+            <a href="{{ path('app_admin_pending_requests') }}" class="nav-item {{ route_name == 'app_admin_pending_requests' ? 'active' : '' }}">
+                <i class="bi bi-clock-history nav-icon"></i>
+                Pending Requests
+            </a>
+        {% elseif is_granted('ROLE_STAFF') %}
+            <a href="{{ path('app_staff_dashboard') }}" class="nav-item {{ route_name == 'app_staff_dashboard' ? 'active' : '' }}">
+                <i class="bi bi-speedometer2 nav-icon"></i>
+                Staff Dashboard
+            </a>
+            <a href="{{ path('app_admin_profile') }}" class="nav-item {{ route_name == 'app_admin_profile' ? 'active' : '' }}">
+                <i class="bi bi-person nav-icon"></i>
+                My Profile
+            </a>
+            <a href="{{ path('app_admin_pending_requests') }}" class="nav-item {{ route_name == 'app_admin_pending_requests' ? 'active' : '' }}">
+                <i class="bi bi-clock-history nav-icon"></i>
+                Pending Requests
+            </a>
+        {% endif %}
+        <a href="{{ path('app_event_index') }}" class="nav-item {{ route_name starts with 'app_event' ? 'active' : '' }}">
+            <i class="bi bi-calendar-event nav-icon"></i>
+            Events
+        </a>
+        <a href="{{ path('app_theme_index') }}" class="nav-item {{ route_name starts with 'app_theme' ? 'active' : '' }}">
+            <i class="bi bi-palette nav-icon"></i>
+            Themes
+        </a>
+        <a href="{{ path('app_venue_index') }}" class="nav-item {{ route_name starts with 'app_venue' ? 'active' : '' }}">
+            <i class="bi bi-building nav-icon"></i>
+            Venues
+        </a>
+        <a href="{{ path('app_service_package_index') }}" class="nav-item {{ route_name starts with 'app_service_package' ? 'active' : '' }}">
+            <i class="bi bi-box-seam nav-icon"></i>
+            Service Packages
+        </a>
+        {% if is_granted('ROLE_ADMIN') %}
+            <a href="{{ path('app_admin_records') }}" class="nav-item {{ route_name == 'app_admin_records' ? 'active' : '' }}">
+                <i class="bi bi-box nav-icon"></i>
+                All Records
+            </a>
+            <a href="{{ path('app_activity_log_index') }}" class="nav-item {{ route_name starts with 'app_activity_log' ? 'active' : '' }}">
+                <i class="bi bi-clipboard-data nav-icon"></i>
+                Activity Log
+            </a>
+            <a href="{{ path('app_admin_analytics') }}" class="nav-item {{ route_name == 'app_admin_analytics' ? 'active' : '' }}">
+                <i class="bi bi-graph-up-arrow nav-icon"></i>
+                Reports
+            </a>
+        {% endif %}
+    </nav>
+    {% if is_granted('ROLE_ADMIN') %}
+    <div class="sidebar-footer">
+        <a href="{{ path('app_admin_profile') }}" class="nav-item {{ route_name == 'app_admin_profile' ? 'active' : '' }}">
+            <i class="bi bi-person nav-icon"></i>
+            My Profile
+        </a>
+    </div>
+    {% endif %}
+</aside>

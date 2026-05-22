@@ -1,0 +1,136 @@
+{# Requires: pendingEventRequests, ServicePackageImageUrlResolver via request entity paths #}
+<script>
+    const requestData = {
+        {% for request in pendingEventRequests %}
+        {{ request.id }}: {
+            id: {{ request.id }},
+            source: "{{ request.sourceLabel|escape('js') }}",
+            clientEmail: "{{ request.requestedBy ? request.requestedBy.email : 'Deleted user' }}",
+            eventType: "{{ request.eventType|escape('js') }}",
+            preferredDate: {% if request.preferredDate %}"{{ request.preferredDate|date('Y-m-d') }}"{% else %}null{% endif %},
+            guestCount: {% if request.estimatedGuestCount %}{{ request.estimatedGuestCount }}{% else %}null{% endif %},
+            budget: {% if request.budget %}"{{ request.budget|escape('js') }}"{% else %}null{% endif %},
+            venue: {% if request.preferredVenue %}"{{ request.preferredVenue|escape('js') }}"{% else %}null{% endif %},
+            theme: {% if request.theme %}"{{ request.theme|escape('js') }}"{% else %}null{% endif %},
+            preferredStyleLabel: {% if request.preferredStyleLabel %}"{{ request.preferredStyleLabel|escape('js') }}"{% else %}null{% endif %},
+            preferredStyleImageUrl: {% set styleUrl = event_request_style_image_url(request) %}{% if styleUrl %}"{{ styleUrl|escape('js') }}"{% else %}null{% endif %},
+            preferredStyleLabel: {% if request.preferredStyleLabel %}"{{ request.preferredStyleLabel|escape('js') }}"{% else %}null{% endif %},
+            specialRequests: {% if request.specialRequests %}"{{ request.specialRequests|escape('js') }}"{% else %}null{% endif %},
+            servicePackage: {% if request.servicePackage %}"{{ request.servicePackage.name|escape('js') }}"{% else %}null{% endif %},
+            preferredTime: {% if request.preferredTime %}"{{ request.preferredTime|escape('js') }}"{% else %}null{% endif %},
+            createdAt: "{{ request.createdAt|date('Y-m-d H:i:s') }}"
+        }{% if not loop.last %},{% endif %}
+        {% endfor %}
+    };
+
+    function styleLabelForRequest(request) {
+        if (request.preferredStyleLabel) {
+            return request.preferredStyleLabel;
+        }
+        if (request.specialRequests) {
+            const match = request.specialRequests.match(/Preferred style look:\s*([^(]+)/i);
+            if (match) {
+                return match[1].trim();
+            }
+        }
+        return '';
+    }
+
+    function renderPreferredStyleLook(request) {
+        if (!request.preferredStyleImageUrl) {
+            return '';
+        }
+        const labelText = styleLabelForRequest(request);
+        const label = labelText
+            ? `<p style="margin: 0 0 0.75rem 0; font-size: 1rem; color: #1e293b; font-weight: 600;">${labelText}</p>`
+            : '';
+        return `
+            <div style="margin-bottom: 1rem;">
+                <strong style="color: #64748b; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.5px;">Chosen style look</strong>
+                ${label}
+                <img src="${request.preferredStyleImageUrl}" alt="Customer chosen style" style="width: 100%; max-height: 280px; object-fit: cover; border-radius: 10px; border: 1px solid #e2e8f0; margin-top: 0.5rem;">
+            </div>
+        `;
+    }
+
+    function openRequestModal(requestId) {
+        const modal = document.getElementById('requestModal');
+        const modalContent = document.getElementById('requestModalContent');
+        const request = requestData[requestId];
+
+        if (!request || !modalContent) {
+            return;
+        }
+
+        modalContent.innerHTML = `
+            <div style="margin-top: 1.5rem; line-height: 1.8;">
+                <div style="margin-bottom: 1.5rem;">
+                    <strong>Source:</strong> ${request.source}<br>
+                    <strong>Client:</strong> ${request.clientEmail}<br>
+                    <strong>Submitted:</strong> ${request.createdAt}
+                </div>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+                    <div>
+                        <strong>Event Type:</strong><br>
+                        <span style="padding: 0.25rem 0.5rem; background: #e2e8f0; border-radius: 4px; display: inline-block; margin-top: 0.25rem;">${request.eventType}</span>
+                    </div>
+                    <div>
+                        <strong>Service Package:</strong><br>
+                        <span style="margin-top: 0.25rem; display: block;">${request.servicePackage || 'Not specified'}</span>
+                    </div>
+                    <div>
+                        <strong>Preferred Date:</strong><br>
+                        <span style="margin-top: 0.25rem; display: block;">${request.preferredDate || 'Not specified'}</span>
+                    </div>
+                    <div>
+                        <strong>Preferred Time:</strong><br>
+                        <span style="margin-top: 0.25rem; display: block;">${request.preferredTime || 'Not specified'}</span>
+                    </div>
+                    <div>
+                        <strong>Guest Count:</strong><br>
+                        <span style="margin-top: 0.25rem; display: block;">${request.guestCount || 'Not specified'}</span>
+                    </div>
+                    <div>
+                        <strong>Budget:</strong><br>
+                        <span style="margin-top: 0.25rem; display: block;">${request.budget || 'Not specified'}</span>
+                    </div>
+                </div>
+                ${request.venue ? `
+                <div style="margin-bottom: 1rem;">
+                    <strong>Preferred Venue:</strong><br>
+                    <p style="margin-top: 0.5rem; padding: 0.75rem; background: #f8fafc; border-radius: 6px; color: #475569;">${request.venue}</p>
+                </div>
+                ` : ''}
+                ${request.theme ? `
+                <div style="margin-bottom: 1rem;">
+                    <strong>Theme:</strong><br>
+                    <p style="margin-top: 0.5rem; padding: 0.75rem; background: #f8fafc; border-radius: 6px; color: #475569;">${request.theme}</p>
+                </div>
+                ` : ''}
+                ${renderPreferredStyleLook(request)}
+                ${request.specialRequests ? `
+                <div style="margin-bottom: 1rem;">
+                    <strong>Special Requests & Details:</strong><br>
+                    <p style="margin-top: 0.5rem; padding: 0.75rem; background: #f8fafc; border-radius: 6px; color: #475569; white-space: pre-wrap;">${request.specialRequests}</p>
+                </div>
+                ` : ''}
+            </div>
+        `;
+
+        modal.style.display = 'block';
+    }
+
+    function closeRequestModal() {
+        const modal = document.getElementById('requestModal');
+        if (modal) {
+            modal.style.display = 'none';
+        }
+    }
+
+    window.addEventListener('click', function(event) {
+        const modal = document.getElementById('requestModal');
+        if (event.target === modal) {
+            closeRequestModal();
+        }
+    });
+</script>

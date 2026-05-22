@@ -1,0 +1,164 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Pending Requests - Lux Events{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('styles/admin.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+{% endblock %}
+
+{% block body %}
+<div class="admin-container">
+    <!-- Sidebar -->
+    {% include 'admin/_sidebar.html.twig' %}
+    
+    <!-- Main Content -->
+    <main class="main-content">
+        {% include 'admin/_header.html.twig' with {title: 'Pending Requests'} %}
+        
+        <!-- Flash Messages -->
+        {% for message in app.flashes('error') %}
+            <div class="flash-message flash-error" style="position: fixed; top: 20px; right: 20px; background-color: #f8d7da; color: #721c24; padding: 15px 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); z-index: 1000; max-width: 400px; border: 1px solid #f5c6cb; animation: slideIn 0.3s ease-out;">
+                <strong><i class="bi bi-exclamation-triangle"></i> Error</strong><br>
+                {{ message }}
+            </div>
+        {% endfor %}
+        
+        {% for message in app.flashes('success') %}
+            <div class="flash-message flash-success" style="position: fixed; top: 20px; right: 20px; background-color: #d4edda; color: #155724; padding: 15px 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); z-index: 1000; max-width: 400px; border: 1px solid #c3e6cb; animation: slideIn 0.3s ease-out;">
+                <strong><i class="bi bi-check-circle"></i> Success</strong><br>
+                {{ message }}
+            </div>
+        {% endfor %}
+        
+        <!-- Pending Event Requests Table -->
+        <div class="table-card" style="margin-top: 2rem;">
+            <div class="table-header">
+                <h3>Pending Event Requests ({{ totalPendingRequests }})</h3>
+            </div>
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Source</th>
+                            <th>Client</th>
+                            <th>Event Type</th>
+                            <th>Preferred Date</th>
+                            <th>Guest Count</th>
+                            <th>Budget</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if pendingEventRequests|length > 0 %}
+                            {% for request in pendingEventRequests %}
+                                <tr>
+                                    <td>{{ request.createdAt|date('Y-m-d H:i') }}</td>
+                                    <td>{% include 'admin/_event_request_source_badge.html.twig' with { request: request } %}</td>
+                                    <td><strong>{{ request.requestedBy ? request.requestedBy.email : 'Deleted user' }}</strong></td>
+                                    <td>{{ request.eventType }}</td>
+                                    <td>{{ request.preferredDate ? request.preferredDate|date('Y-m-d') : '-' }}</td>
+                                    <td>{{ request.estimatedGuestCount ?? '-' }}</td>
+                                    <td>{{ request.budget ?? '-' }}</td>
+                                    <td>
+                                        <span class="status-badge pending" style="padding: 0.35rem 0.75rem; border-radius: 6px; font-size: 0.8rem; font-weight: 600; background: #fef3c7; color: #92400e; text-transform: uppercase;">
+                                            {{ request.status }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div style="display: flex; gap: 0.5rem; align-items: center;">
+                                            <button class="action-btn view-btn" onclick="openRequestModal({{ request.id }})" style="padding: 0.5rem 1rem;">
+                                                <i class="bi bi-eye"></i> View
+                                            </button>
+                                            <form method="post" action="{{ path('app_admin_event_request_mark_done', {'id': request.id}) }}" style="display: inline-block; margin: 0;">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('mark_done_' ~ request.id) }}">
+                                                <button type="submit" class="action-btn" style="padding: 0.5rem 1rem; background: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; transition: all 0.2s ease;" onmouseover="this.style.background='#059669'" onmouseout="this.style.background='#10b981'">
+                                                    <i class="bi bi-check-circle"></i> Done
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="9" class="empty-state">
+                                    <p>No pending event requests</p>
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Event Request Modal -->
+        <div id="requestModal" class="modal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5);">
+            <div class="modal-content" style="background-color: #fefefe; margin: 5% auto; padding: 2rem; border: none; border-radius: 12px; width: 90%; max-width: 700px; box-shadow: 0 8px 32px rgba(0,0,0,0.2);">
+                <span class="close" onclick="closeRequestModal()" style="color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; line-height: 20px;">&times;</span>
+                <h2 style="margin-top: 0; color: #1e293b;">Event Request Details</h2>
+                <div id="requestModalContent">
+                    <!-- Content will be loaded dynamically -->
+                </div>
+            </div>
+        </div>
+        
+        {% include 'admin/_event_request_modal_script.html.twig' %}
+    </main>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <style>
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+        
+        .flash-message {
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        .flash-message.fade-out {
+            animation: slideOut 0.3s ease-out;
+        }
+    </style>
+    <script>
+        // Auto-hide flash messages after 5 seconds
+        document.addEventListener('DOMContentLoaded', function() {
+            const flashMessages = document.querySelectorAll('.flash-message');
+            flashMessages.forEach(function(message) {
+                setTimeout(function() {
+                    message.classList.add('fade-out');
+                    setTimeout(function() {
+                        message.remove();
+                    }, 300);
+                }, 5000);
+            });
+        });
+    </script>
+{% endblock %}
+

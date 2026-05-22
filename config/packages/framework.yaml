@@ -8,6 +8,16 @@ framework:
     #esi: true
     #fragments: true
 
+when@dev:
+    framework:
+        session:
+            cookie_secure: false
+
+when@prod:
+    framework:
+        trusted_proxies: 'REMOTE_ADDR'
+        trusted_headers: ['x-forwarded-for', 'x-forwarded-proto', 'x-forwarded-port', 'x-forwarded-host']
+
 when@test:
     framework:
         test: true

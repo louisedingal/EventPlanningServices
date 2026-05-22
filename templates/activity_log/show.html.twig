@@ -1,0 +1,103 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Activity Log Details - Lux Events{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('styles/admin.css') }}">
+{% endblock %}
+
+{% block body %}
+<div class="admin-container">
+    {% include 'admin/_sidebar.html.twig' %}
+    <main class="main-content">
+        {% include 'admin/_header.html.twig' with {title: 'Activity Log Details'} %}
+
+        <div class="table-card">
+            <div class="table-header">
+                <h3>Log Entry #{{ log.id }}</h3>
+                <a href="{{ path('app_activity_log_index') }}" class="view-all-link">← Back to logs</a>
+            </div>
+            <div class="table-content">
+                <table class="data-table">
+                    <tbody>
+                        <tr>
+                            <th style="width:220px;">ID</th>
+                            <td>#{{ log.id }}</td>
+                        </tr>
+                        <tr>
+                            <th>Timestamp</th>
+                            <td><strong>{{ log.createdAt|date('Y-m-d H:i:s') }}</strong></td>
+                        </tr>
+                        <tr>
+                            <th>Username</th>
+                            <td><strong>{{ log.userEmail }}</strong></td>
+                        </tr>
+                        <tr>
+                            <th>Role</th>
+                            <td>
+                                <span class="role-badge" style="padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.875rem; 
+                                    {% if log.userRole == 'ROLE_ADMIN' %}background: #fef3c7; color: #92400e;
+                                    {% else %}background: #dbeafe; color: #1e40af;{% endif %}">
+                                    {{ log.userRole }}
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Action Performed</th>
+                            <td>
+                                <span class="action-badge" style="padding: 0.5rem 0.75rem; border-radius: 6px; font-size: 0.875rem; font-weight: 600;
+                                    {% if log.action == 'Create' %}background: #d1fae5; color: #065f46;
+                                    {% elseif log.action == 'Update' %}background: #dbeafe; color: #1e40af;
+                                    {% elseif log.action == 'Delete' %}background: #fee2e2; color: #991b1b;
+                                    {% elseif log.action == 'Login' %}background: #fef3c7; color: #92400e;
+                                    {% elseif log.action == 'Logout' %}background: #f3f4f6; color: #374151;
+                                    {% else %}background: #e2e8f0; color: #475569;{% endif %}">
+                                    {{ log.action }}
+                                </span>
+                            </td>
+                        </tr>
+                        <tr>
+                            <th>Entity Type</th>
+                            <td>{{ log.entityType ?: '-' }}</td>
+                        </tr>
+                        <tr>
+                            <th>Entity ID</th>
+                            <td>{{ log.entityId ?: '-' }}</td>
+                        </tr>
+                        <tr>
+                            <th>Description</th>
+                            <td>{{ log.description ?: '-' }}</td>
+                        </tr>
+                        <tr>
+                            <th>Affected Data</th>
+                            <td>
+                                {% if log.affectedData %}
+                                    <pre style="background: #f8fafc; padding: 1rem; border-radius: 8px; border: 1px solid #e2e8f0; overflow-x: auto; font-size: 0.875rem; max-height: 400px; overflow-y: auto;">{{ log.affectedData }}</pre>
+                                {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

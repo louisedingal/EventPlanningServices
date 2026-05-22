@@ -1,0 +1,251 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Event Details{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('styles/admin.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8fafc;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .event-detail-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0;
+        }
+        
+        .detail-card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+            overflow: hidden;
+        }
+        
+        .detail-body {
+            padding: 2rem;
+        }
+        
+        .detail-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+        
+        .detail-item {
+            padding: 1.25rem;
+            background: #f8fafc;
+            border-radius: 8px;
+            border-left: 4px solid #3b82f6;
+            transition: all 0.2s ease;
+        }
+        
+        .detail-item:hover {
+            background: #f1f5f9;
+            transform: translateX(4px);
+        }
+        
+        .detail-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            font-weight: 600;
+            color: #64748b;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+        }
+        
+        .detail-value {
+            font-size: 1.125rem;
+            color: #1e293b;
+            font-weight: 500;
+        }
+        
+        .detail-item.full-width {
+            grid-column: 1 / -1;
+        }
+        
+        .detail-actions {
+            display: flex;
+            gap: 1rem;
+            padding: 1.5rem 2rem;
+            background: #f8fafc;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+            font-size: 0.9rem;
+        }
+        
+        .btn-back {
+            background-color: #64748b;
+            color: white;
+        }
+        
+        .btn-back:hover {
+            background-color: #475569;
+            transform: translateY(-2px);
+        }
+        
+        .btn-edit {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: white;
+            box-shadow: 0 4px 6px rgba(245, 158, 11, 0.3);
+        }
+        
+        .btn-edit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(245, 158, 11, 0.4);
+        }
+        
+        .btn-delete {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            color: white;
+            box-shadow: 0 4px 6px rgba(239, 68, 68, 0.3);
+            margin-left: auto;
+        }
+        
+        .btn-delete:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(239, 68, 68, 0.4);
+        }
+        
+        .event-badge {
+            display: inline-block;
+            padding: 0.5rem 1rem;
+            border-radius: 9999px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+        
+        .badge-wedding {
+            background-color: #fce7f3;
+            color: #be185d;
+        }
+        
+        .badge-birthday {
+            background-color: #dbeafe;
+            color: #1e40af;
+        }
+        
+        .badge-corporate {
+            background-color: #e0e7ff;
+            color: #4338ca;
+        }
+        
+        .badge-default {
+            background-color: #f3f4f6;
+            color: #374151;
+        }
+        
+        .price-highlight {
+            font-size: 1.5rem;
+            color: #10b981;
+            font-weight: 700;
+        }
+        
+        .icon {
+            margin-right: 0.5rem;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="admin-container">
+    <!-- Sidebar -->
+    {% include 'admin/_sidebar.html.twig' %}
+    
+    <!-- Main Content -->
+    <main class="main-content">
+        {% include 'admin/_header.html.twig' with {title: 'Event Details #' ~ event.id} %}
+        
+        <div class="event-detail-container">
+            <div class="detail-card">
+        <div class="detail-body">
+            <div class="detail-grid">
+                <div class="detail-item">
+                    <div class="detail-label">Event ID</div>
+                    <div class="detail-value">#{{ event.id }}</div>
+                </div>
+                
+                <div class="detail-item">
+                    <div class="detail-label">Customer Name</div>
+                    <div class="detail-value">{{ event.customerName }}</div>
+                </div>
+                
+                <div class="detail-item">
+                    <div class="detail-label">Event Type</div>
+                    <div class="detail-value">
+                        {% set eventType = event.eventType|lower %}
+                        <span class="event-badge badge-{{ eventType in ['wedding', 'birthday', 'corporate'] ? eventType : 'default' }}">
+                            {{ event.eventType }}
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="detail-item">
+                    <div class="detail-label">Event Date</div>
+                    <div class="detail-value">
+                        {{ event.eventDate ? event.eventDate|date('F d, Y') : 'Not set' }}<br>
+                        <small style="color: #64748b;">{{ event.eventDate ? event.eventDate|date('h:i A') : '' }}</small>
+                    </div>
+                </div>
+                
+                <div class="detail-item">
+                    <div class="detail-label">Venue</div>
+                    <div class="detail-value">{{ event.venue }}</div>
+                </div>
+                
+                <div class="detail-item">
+                    <div class="detail-label">Theme</div>
+                    <div class="detail-value">{{ event.theme }}</div>
+                </div>
+                
+                <div class="detail-item">
+                    <div class="detail-label">Guest Count</div>
+                    <div class="detail-value">{{ event.guestCount }} guests</div>
+                </div>
+                
+                <div class="detail-item">
+                    <div class="detail-label">Total Price</div>
+                    <div class="detail-value price-highlight">₱{{ event.price|number_format(2) }}</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="detail-actions">
+            <a href="{{ path('app_event_index') }}" class="btn btn-back">
+                <span class="icon">←</span> Back to List
+            </a>
+            {% if is_granted('ROLE_ADMIN') %}
+                <a href="{{ path('app_admin_dashboard') }}" class="btn btn-back">
+                    <i class="bi bi-house"></i> Back to Dashboard
+                </a>
+            {% else %}
+                <a href="{{ path('app_admin_profile') }}" class="btn btn-back">
+                    <i class="bi bi-person"></i> My Profile
+                </a>
+            {% endif %}
+            {% if isAdmin or event.createdBy == currentUser %}
+                <a href="{{ path('app_event_edit', {'id': event.id}) }}" class="btn btn-edit">
+                    <i class="bi bi-pencil icon"></i> Edit Event
+                </a>
+                {{ include('event/_delete_form.html.twig') }}
+            {% endif %}
+        </div>
+    </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

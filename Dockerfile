@@ -1,0 +1,60 @@
+# EventPlanning — production image (nginx + PHP-FPM). Local dev: docker compose (INSTALL_DEV_DEPS=1).
+FROM php:8.2-fpm-bookworm
+
+ARG INSTALL_DEV_DEPS=0
+
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    nginx \
+    curl \
+    git \
+    unzip \
+    libicu-dev \
+    libzip-dev \
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install -j$(nproc) \
+        pdo_mysql \
+        intl \
+        zip \
+        opcache \
+        gd \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+WORKDIR /app
+
+COPY composer.json composer.lock symfony.lock ./
+RUN composer install --no-interaction --prefer-dist --no-scripts --no-autoloader
+
+COPY . .
+
+# Symfony console (composer post-install scripts) requires .env on disk (.env is not in the image context).
+RUN cp .env.example .env
+
+RUN if [ "$INSTALL_DEV_DEPS" = "1" ]; then \
+        composer install --no-interaction --prefer-dist; \
+    else \
+        composer install --no-interaction --prefer-dist --no-dev; \
+    fi \
+    && composer dump-autoload --optimize --classmap-authoritative \
+    && test -f vendor/autoload_runtime.php
+
+RUN sed -i 's/^APP_ENV=.*/APP_ENV=prod/' .env \
+    && sed -i 's/^APP_DEBUG=.*/APP_DEBUG=0/' .env
+
+RUN mkdir -p var/cache var/log public/uploads/service-packages public/uploads/theme-samples config/jwt \
+    && chown -R www-data:www-data var public/uploads config/jwt
+
+COPY docker/nginx-main.conf /etc/nginx/nginx.conf
+COPY docker/nginx.conf /etc/nginx/sites-available/default
+RUN ln -sf /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
+
+COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
+RUN chmod +x /usr/local/bin/entrypoint.sh
+
+EXPOSE 8080
+
+ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

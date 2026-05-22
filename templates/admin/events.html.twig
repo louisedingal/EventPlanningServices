@@ -1,0 +1,204 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Admin Events - Lux Events{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('styles/admin.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+{% endblock %}
+
+{% block body %}
+<div class="admin-container">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <div class="logo-section">
+                <div class="logo-square">
+                    <img src="{{ asset('img/logo1.png') }}" alt="Lux Events" class="logo-img">
+                </div>
+                <span class="brand-name">Lux Events</span>
+            </div>
+            <div class="user-section">
+                <div class="user-avatar">A</div>
+                <button class="add-btn">+</button>
+            </div>
+        </div>
+        
+        <div class="sidebar-tabs">
+            <button class="tab active">General</button>
+            <button class="tab">Project</button>
+        </div>
+        
+        <nav class="sidebar-nav">
+            <a href="{{ path('app_admin_dashboard') }}" class="nav-item">
+                <span class="nav-icon">📊</span>
+                Dashboard
+            </a>
+            <a href="{{ path('app_event_index') }}" class="nav-item active">
+                <span class="nav-icon">📅</span>
+                Events
+            </a>
+            <a href="#" class="nav-item">
+                <span class="nav-icon">📧</span>
+                Email Inbox
+            </a>
+            <a href="#" class="nav-item">
+                <span class="nav-icon">📅</span>
+                Calendar
+            </a>
+            <a href="#" class="nav-item">
+                <span class="nav-icon">📄</span>
+                Templates
+            </a>
+            <a href="#" class="nav-item">
+                <span class="nav-icon">👥</span>
+                Team
+                <span class="dropdown-arrow">▼</span>
+            </a>
+            <a href="#" class="nav-item">
+                <span class="nav-icon">👤</span>
+                Contacts
+            </a>
+            
+            <hr class="nav-divider">
+            
+            <a href="#" class="nav-item">
+                <span class="nav-icon">🛒</span>
+                Sales Pipeline
+                <span class="dropdown-arrow">▼</span>
+            </a>
+            <a href="#" class="nav-item">
+                <span class="nav-icon">🔔</span>
+                Notifications
+            </a>
+            <a href="{{ path('app_admin_analytics') }}" class="nav-item">
+                <span class="nav-icon">📈</span>
+                Reports
+            </a>
+            
+            <hr class="nav-divider">
+            
+            <a href="#" class="nav-item">
+                <span class="nav-icon">👤</span>
+                Profile
+            </a>
+        </nav>
+        
+        <button class="sidebar-toggle">
+            <span class="toggle-arrow">→</span>
+        </button>
+    </aside>
+    
+    <!-- Main Content -->
+    <main class="main-content">
+        <header class="main-header">
+            <h1>Event Management</h1>
+            <div class="header-actions">
+                <button class="btn-secondary">Export Events</button>
+                <a href="{{ path('app_event_new') }}" class="btn-primary">+ New Event</a>
+            </div>
+        </header>
+        
+        <!-- Events Table -->
+        <div class="table-card">
+            <div class="table-header">
+                <h3>All Events ({{ events|length }})</h3>
+                <div class="table-filters">
+                    <select class="filter-select">
+                        <option>All Types</option>
+                        <option>Wedding</option>
+                        <option>Birthday</option>
+                        <option>Corporate</option>
+                    </select>
+                    <select class="filter-select">
+                        <option>All Status</option>
+                        <option>Active</option>
+                        <option>Completed</option>
+                        <option>Cancelled</option>
+                    </select>
+                </div>
+            </div>
+            <div class="table-content">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Customer</th>
+                            <th>Event Type</th>
+                            <th>Date</th>
+                            <th>Venue</th>
+                            <th>Guests</th>
+                            <th>Price</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for event in events %}
+                            <tr>
+                                <td><strong>#{{ event.id }}</strong></td>
+                                <td>{{ event.customerName }}</td>
+                                <td>
+                                    <span class="event-type-badge event-type-{{ event.eventType|lower }}">
+                                        {{ event.eventType }}
+                                    </span>
+                                </td>
+                                <td>{{ event.eventDate ? event.eventDate|date('M d, Y') : '-' }}</td>
+                                <td>{{ event.venue ?? '-' }}</td>
+                                <td>{{ event.guestCount ?? '-' }}</td>
+                                <td><strong>₱{{ event.price|number_format(2) }}</strong></td>
+                                <td>
+                                    <span class="status-badge status-active">Active</span>
+                                </td>
+                                <td>
+                                    <div class="actions">
+                                        <a href="{{ path('app_event_show', {'id': event.id}) }}" class="action-btn view-btn">
+                                            <i class="bi bi-eye"></i> View
+                                        </a>
+                                        <a href="{{ path('app_event_edit', {'id': event.id}) }}" class="action-btn edit-btn">
+                                            <i class="bi bi-pencil"></i> Edit
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="9" class="empty-state">
+                                    <p>No events found</p>
+                                    <a href="{{ path('app_event_new') }}" class="btn-primary">Create First Event</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+
+<style>
+.table-filters {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.filter-select {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    background-color: #ffffff;
+    font-size: 0.875rem;
+    color: #64748b;
+}
+
+</style>
+{% endblock %}
+
+
+
+
+
+

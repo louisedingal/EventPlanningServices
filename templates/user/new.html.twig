@@ -1,0 +1,351 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Create New User - Lux Events{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('styles/admin.css') }}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        .form-page-container {
+            padding: 2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .form-card-enhanced {
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+            transition: box-shadow 0.3s ease;
+        }
+
+        .form-card-enhanced:hover {
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        .form-header-enhanced {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            padding: 2rem;
+            color: #ffffff;
+            border-bottom: none;
+        }
+
+        .form-header-enhanced h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin: 0 0 0.5rem 0;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .form-header-enhanced h2 i {
+            font-size: 1.5rem;
+            opacity: 0.95;
+        }
+
+        .form-header-enhanced p {
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 0.95rem;
+            margin: 0;
+            line-height: 1.6;
+        }
+
+        .form-body {
+            padding: 2.5rem;
+        }
+
+        .form-group-enhanced {
+            margin-bottom: 1.75rem;
+        }
+
+        .form-group-enhanced label {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            color: #1e293b;
+            font-size: 0.9375rem;
+            margin-bottom: 0.625rem;
+        }
+
+        .form-group-enhanced label i {
+            color: #64748b;
+            font-size: 1rem;
+        }
+
+        .form-group-enhanced input[type="text"],
+        .form-group-enhanced input[type="email"],
+        .form-group-enhanced input[type="password"],
+        .form-group-enhanced select {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 0.9375rem;
+            color: #1e293b;
+            background-color: #ffffff;
+            transition: all 0.3s ease;
+            font-family: 'Inter', sans-serif;
+        }
+
+        .form-group-enhanced input[type="text"]:focus,
+        .form-group-enhanced input[type="email"]:focus,
+        .form-group-enhanced input[type="password"]:focus,
+        .form-group-enhanced select:focus {
+            outline: none;
+            border-color: #b8860b;
+            box-shadow: 0 0 0 4px rgba(184, 134, 11, 0.1);
+            background-color: #ffffff;
+        }
+
+        .form-group-enhanced input[type="text"]::placeholder,
+        .form-group-enhanced input[type="email"]::placeholder,
+        .form-group-enhanced input[type="password"]::placeholder {
+            color: #94a3b8;
+        }
+
+        .form-group-enhanced .help-text {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #64748b;
+            font-size: 0.8125rem;
+            margin-top: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            background: #f1f5f9;
+            border-radius: 6px;
+            border-left: 3px solid #b8860b;
+        }
+
+        .form-group-enhanced .help-text i {
+            font-size: 0.875rem;
+            color: #b8860b;
+        }
+
+        .form-actions-enhanced {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 2px solid #f1f5f9;
+        }
+
+        .btn-primary-enhanced {
+            flex: 1;
+            padding: 0.9375rem 2rem;
+            background: linear-gradient(135deg, #b8860b 0%, #daa520 100%);
+            color: #ffffff;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.9375rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 12px rgba(184, 134, 11, 0.3);
+        }
+
+        .btn-primary-enhanced:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(184, 134, 11, 0.4);
+            background: linear-gradient(135deg, #daa520 0%, #b8860b 100%);
+        }
+
+        .btn-secondary-enhanced {
+            flex: 1;
+            padding: 0.9375rem 2rem;
+            background: #ffffff;
+            color: #64748b;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 0.9375rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            text-decoration: none;
+        }
+
+        .btn-secondary-enhanced:hover {
+            background: #f8fafc;
+            border-color: #cbd5e1;
+            color: #475569;
+            transform: translateY(-1px);
+        }
+
+        .alert-enhanced {
+            padding: 1rem 1.25rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 0.9375rem;
+            border-left: 4px solid;
+        }
+
+        .alert-error {
+            background: #fef2f2;
+            color: #991b1b;
+            border-left-color: #ef4444;
+        }
+
+        .form-errors {
+            color: #ef4444;
+            font-size: 0.8125rem;
+            margin-top: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-errors::before {
+            content: "\F623";
+            font-family: "bootstrap-icons";
+            font-size: 0.875rem;
+        }
+
+        @media (max-width: 768px) {
+            .form-page-container {
+                padding: 1rem;
+            }
+
+            .form-body {
+                padding: 1.5rem;
+            }
+
+            .form-header-enhanced {
+                padding: 1.5rem;
+            }
+
+            .form-actions-enhanced {
+                flex-direction: column;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="admin-container">
+    {% include 'admin/_sidebar.html.twig' %}
+    <main class="main-content">
+        {% include 'admin/_header.html.twig' with {title: 'Create New User'} %}
+
+        <div class="form-page-container">
+            <div class="form-card-enhanced">
+                <div class="form-header-enhanced">
+                    <h2>
+                        <i class="bi bi-person-plus-fill"></i>
+                        Create New User Account
+                    </h2>
+                    <p>Fill in the details below to create a new user account with Admin or Staff privileges. All fields are required.</p>
+                </div>
+
+                <div class="form-body">
+                    {% for flash_error in app.flashes('error') %}
+                        <div class="alert-enhanced alert-error">
+                            <i class="bi bi-exclamation-triangle-fill"></i>
+                            {{ flash_error }}
+                        </div>
+                    {% endfor %}
+
+                    {{ form_start(form, {'attr': {'class': 'form', 'novalidate': 'novalidate'}}) }}
+                        <div class="form-group-enhanced">
+                            <label for="{{ form.name.vars.id }}">
+                                <i class="bi bi-person"></i>
+                                First Name
+                            </label>
+                            {{ form_widget(form.name, {'attr': {'placeholder': 'Enter first name'}}) }}
+                            {{ form_errors(form.name) }}
+                        </div>
+
+                        <div class="form-group-enhanced">
+                            <label for="{{ form.lastName.vars.id }}">
+                                <i class="bi bi-person-badge"></i>
+                                Last Name
+                            </label>
+                            {{ form_widget(form.lastName, {'attr': {'placeholder': 'Enter last name'}}) }}
+                            {{ form_errors(form.lastName) }}
+                        </div>
+
+                        <div class="form-group-enhanced">
+                            <label for="{{ form.email.vars.id }}">
+                                <i class="bi bi-envelope"></i>
+                                Email Address
+                            </label>
+                            {{ form_widget(form.email, {'attr': {'placeholder': 'Enter email address'}}) }}
+                            {{ form_errors(form.email) }}
+                        </div>
+
+                        <div class="form-group-enhanced">
+                            <label for="{{ form.roles.vars.id }}">
+                                <i class="bi bi-shield-check"></i>
+                                User Role
+                            </label>
+                            {{ form_widget(form.roles) }}
+                            {{ form_errors(form.roles) }}
+                            <div class="help-text">
+                                <i class="bi bi-info-circle"></i>
+                                Select Admin or Staff role for this user. Admin has full access, Staff has limited access.
+                            </div>
+                        </div>
+
+                        <div class="form-group-enhanced">
+                            <label for="{{ form.status.vars.id }}">
+                                <i class="bi bi-toggle-on"></i>
+                                Account Status
+                            </label>
+                            {{ form_widget(form.status) }}
+                            {{ form_errors(form.status) }}
+                        </div>
+
+                        <div class="form-group-enhanced">
+                            <label for="{{ form.plainPassword.vars.id }}">
+                                <i class="bi bi-lock"></i>
+                                Password
+                            </label>
+                            {{ form_widget(form.plainPassword, {'attr': {'placeholder': 'Enter secure password'}}) }}
+                            {{ form_errors(form.plainPassword) }}
+                            <div class="help-text">
+                                <i class="bi bi-shield-lock"></i>
+                                Password must be at least 6 characters long. Use a combination of letters, numbers, and symbols for better security.
+                            </div>
+                        </div>
+
+                        <div class="form-actions-enhanced">
+                            <button type="submit" class="btn-primary-enhanced">
+                                <i class="bi bi-check-circle"></i>
+                                Create User
+                            </button>
+                            <a href="{{ path('app_user_index') }}" class="btn-secondary-enhanced">
+                                <i class="bi bi-x-circle"></i>
+                                Cancel
+                            </a>
+                        </div>
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}
+
+
+
+
+
+
+
+
+

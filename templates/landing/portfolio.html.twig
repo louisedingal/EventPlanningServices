@@ -1,0 +1,199 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Client Portfolio - Lux Events{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('styles/landing.css') }}">
+    <style>
+        .portfolio-page {
+            min-height: 100vh;
+            background: #f1f5f9;
+            color: #0f172a;
+        }
+
+        .portfolio-topbar {
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+        }
+
+        .portfolio-topbar-inner {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0.85rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 1rem;
+        }
+
+        .portfolio-logo-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.65rem;
+            text-decoration: none;
+            color: #0f172a;
+            font-family: 'Manrope', sans-serif;
+            font-weight: 800;
+            font-size: 1.05rem;
+        }
+
+        .portfolio-logo-link img {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+            border-radius: 10px;
+        }
+
+        .portfolio-hero {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            color: #fff;
+            padding: 3rem 1.5rem 3.5rem;
+        }
+
+        .portfolio-hero-inner {
+            max-width: 720px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .portfolio-hero-inner h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(1.85rem, 4vw, 2.75rem);
+            margin: 0 0 1rem;
+            line-height: 1.15;
+        }
+
+        .portfolio-hero-inner p {
+            font-family: 'Manrope', sans-serif;
+            margin: 0;
+            font-size: 1.05rem;
+            line-height: 1.7;
+            color: rgba(255, 255, 255, 0.88);
+        }
+
+        .portfolio-body {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2.5rem 1.5rem 4rem;
+        }
+
+        .portfolio-intro {
+            font-family: 'Manrope', sans-serif;
+            font-size: 1rem;
+            color: #475569;
+            max-width: 65ch;
+            margin: 0 auto 2.25rem;
+            text-align: center;
+            line-height: 1.75;
+        }
+
+        .portfolio-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .portfolio-gallery-card {
+            background: #fff;
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(15, 23, 42, 0.08);
+            border: 1px solid rgba(15, 23, 42, 0.06);
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .portfolio-gallery-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 14px 36px rgba(15, 23, 42, 0.12);
+        }
+
+        .portfolio-gallery-card figure {
+            margin: 0;
+        }
+
+        .portfolio-gallery-card .img-wrap {
+            aspect-ratio: 4 / 3;
+            overflow: hidden;
+            background: #e2e8f0;
+        }
+
+        .portfolio-gallery-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.4s ease;
+        }
+
+        .portfolio-gallery-card:hover img {
+            transform: scale(1.04);
+        }
+
+        .portfolio-gallery-card figcaption {
+            padding: 1.1rem 1.15rem 1.25rem;
+        }
+
+        .portfolio-gallery-card h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.15rem;
+            margin: 0;
+            color: #0f172a;
+            line-height: 1.35;
+        }
+
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="portfolio-page">
+        <header class="portfolio-topbar">
+            <div class="portfolio-topbar-inner">
+                <a class="portfolio-logo-link" href="{{ path('app_landing') }}" aria-label="Lux Events — back to home">
+                    <img src="{{ asset('img/logo1.png') }}" alt="">
+                    <span>Lux Events</span>
+                </a>
+            </div>
+        </header>
+
+        <section class="portfolio-hero">
+            <div class="portfolio-hero-inner">
+                <h1>Work commissioned by our clients</h1>
+                <p>
+                    A curated gallery of weddings, corporate gatherings, and celebrations Lux Events has planned, styled, or coordinated.
+                    Many briefs blend our in-house creative direction with your own vendors and venues.
+                </p>
+            </div>
+        </section>
+
+        <div class="portfolio-body">
+            <p class="portfolio-intro">
+                Below are representative commissions from weddings, corporate gatherings, and celebrations we have planned, styled, or coordinated.
+            </p>
+
+            <div class="portfolio-gallery">
+                {% for item in portfolio_items %}
+                    {% set src = item.image starts with 'http' ? item.image : asset(item.image) %}
+                    <article class="portfolio-gallery-card">
+                        <figure>
+                            <div class="img-wrap">
+                                <img src="{{ src }}" alt="{{ item.title|e('html_attr') }}" loading="lazy" decoding="async">
+                            </div>
+                            <figcaption>
+                                <h2>{{ item.title }}</h2>
+                            </figcaption>
+                        </figure>
+                    </article>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

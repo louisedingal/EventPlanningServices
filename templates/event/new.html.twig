@@ -1,0 +1,132 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Create New Event{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('styles/admin.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8fafc;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+        
+        .new-event-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0;
+        }
+        
+        .info-card {
+            background-color: #ffffff;
+            border-left: 4px solid #3b82f6;
+            padding: 1.25rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        }
+        
+        .info-card.error {
+            border-left-color: #ef4444;
+            background-color: #fef2f2;
+        }
+        
+        .info-card p {
+            margin: 0;
+            color: #334155;
+            font-size: 0.9rem;
+            line-height: 1.6;
+        }
+        
+        .info-card strong {
+            color: #1e293b;
+            font-weight: 600;
+        }
+        
+        .info-card.error p {
+            color: #991b1b;
+        }
+        
+        .back-link-wrapper {
+            margin-top: 2rem;
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+        
+        .btn-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            background-color: #ffffff;
+            color: #64748b;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            transition: all 0.2s ease;
+            border: 1px solid #e2e8f0;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+        
+        .btn-back:hover {
+            background-color: #f8fafc;
+            border-color: #cbd5e1;
+            color: #475569;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="admin-container">
+    <!-- Sidebar -->
+    {% include 'admin/_sidebar.html.twig' %}
+    
+    <!-- Main Content -->
+    <main class="main-content">
+        {% include 'admin/_header.html.twig' with {title: 'Create New Event'} %}
+        
+        <!-- Flash Messages -->
+        {% for message in app.flashes('error') %}
+            <div class="flash-message flash-error" style="position: fixed; top: 20px; right: 20px; background-color: #f8d7da; color: #721c24; padding: 15px 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); z-index: 1000; max-width: 400px; border: 1px solid #f5c6cb; animation: slideIn 0.3s ease-out;">
+                <strong><i class="bi bi-exclamation-triangle"></i> Error</strong><br>
+                {{ message }}
+            </div>
+        {% endfor %}
+        
+        {% for message in app.flashes('success') %}
+            <div class="flash-message flash-success" style="position: fixed; top: 20px; right: 20px; background-color: #d4edda; color: #155724; padding: 15px 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); z-index: 1000; max-width: 400px; border: 1px solid #c3e6cb; animation: slideIn 0.3s ease-out;">
+                <strong><i class="bi bi-check-circle"></i> Success</strong><br>
+                {{ message }}
+            </div>
+        {% endfor %}
+        
+        <div class="new-event-container">
+            {% for message in app.flashes('error') %}
+                <div class="info-card error">
+                    <p><strong><i class="bi bi-exclamation-triangle"></i> Error:</strong> {{ message }}</p>
+                </div>
+            {% endfor %}
+            
+            <div class="info-card">
+                <p><strong><i class="bi bi-lightbulb"></i> Tip:</strong> Make sure to fill in all required fields. You can always edit the event details later.</p>
+            </div>
+            
+            {{ include('event/_form.html.twig') }}
+            
+            <div class="back-link-wrapper">
+                <a href="{{ path('app_event_index') }}" class="btn-back">
+                    <i class="bi bi-arrow-left"></i> Back to Event List
+                </a>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

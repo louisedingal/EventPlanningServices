@@ -1,0 +1,61 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}View Theme - Lux Events{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('styles/admin.css') }}">
+{% endblock %}
+
+{% block body %}
+<div class="admin-container">
+    {% include 'admin/_sidebar.html.twig' %}
+    <main class="main-content">
+        {% include 'admin/_header.html.twig' with {title: 'View Theme'} %}
+
+        <div class="table-card">
+            <div class="table-header">
+                <h3>Theme Details</h3>
+                <div>
+                    <a href="{{ path('app_theme_index') }}" class="view-all-link">← Back to list</a>
+                    {% if isAdmin or theme.createdBy == currentUser %}
+                        <a href="{{ path('app_theme_edit', {id: theme.id}) }}" class="view-all-link" style="margin-left:12px;">Edit →</a>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="table-content">
+                <table class="data-table">
+                    <tbody>
+                        <tr>
+                            <th style="width:220px;">ID</th>
+                            <td>#{{ theme.id }}</td>
+                        </tr>
+                        <tr>
+                            <th>Name</th>
+                            <td>{{ theme.name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Description</th>
+                            <td>{{ theme.description ?: '-' }}</td>
+                        </tr>
+                        <tr>
+                            <th>Style samples</th>
+                            <td>
+                                {% if theme.sampleImagePaths|length > 0 %}
+                                    <div class="theme-samples-grid">
+                                        {% for path in theme.sampleImagePaths %}
+                                            <img src="{{ asset(path) }}" alt="Sample {{ loop.index }}" style="max-width:140px;border-radius:8px;margin:4px;">
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    <span class="text-muted">No sample photos yet</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

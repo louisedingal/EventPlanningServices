@@ -1,0 +1,188 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}All Users - Lux Events{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('styles/admin.css') }}">
+    <style>
+        /* Ensure action buttons display correctly on initial load */
+        .actions {
+            display: flex !important;
+            gap: 0.5rem !important;
+            align-items: center !important;
+            flex-wrap: nowrap !important;
+            flex-direction: row !important;
+        }
+        
+        .actions form {
+            display: inline !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        
+        .action-btn {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 0.5rem !important;
+            padding: 0.625rem 1rem !important;
+            border-radius: 6px !important;
+            font-size: 0.875rem !important;
+            font-weight: 600 !important;
+            text-decoration: none !important;
+            border: none !important;
+            cursor: pointer !important;
+            height: 38px !important;
+            min-height: 38px !important;
+            width: 90px !important;
+            min-width: 90px !important;
+            max-width: 90px !important;
+            box-sizing: border-box !important;
+            line-height: 1 !important;
+            white-space: nowrap !important;
+            transition: all 0.2s ease !important;
+        }
+        
+        .action-btn i {
+            font-size: 0.875rem !important;
+            display: inline-flex !important;
+            align-items: center !important;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="admin-container">
+    {% include 'admin/_sidebar.html.twig' %}
+    <main class="main-content">
+        {% include 'admin/_header.html.twig' with {title: 'All Users', showCreateButton: false} %}
+
+        <!-- Filter Section -->
+        <div class="search-filter-section" style="background: white; padding: 1.5rem; border-radius: 12px; margin-bottom: 1.5rem; box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);">
+            <form method="GET" action="{{ path('app_user_index') }}" class="search-form" style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: end;">
+                <div style="flex: 1; min-width: 200px;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #334155; font-size: 0.875rem;">Filter</label>
+                    <input type="text" name="q" value="{{ query }}" placeholder="Filter by email or name..." 
+                           style="width: 100%; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.875rem;">
+                </div>
+                <div style="min-width: 150px;">
+                    <label style="display: block; margin-bottom: 0.5rem; font-weight: 600; color: #334155; font-size: 0.875rem;">Status</label>
+                    <select name="status" style="width: 100%; padding: 0.75rem; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 0.875rem;">
+                        <option value="">All Statuses</option>
+                        <option value="active" {{ selectedStatus == 'active' ? 'selected' : '' }}>Active</option>
+                        <option value="disabled" {{ selectedStatus == 'disabled' ? 'selected' : '' }}>Disabled</option>
+                        <option value="archived" {{ selectedStatus == 'archived' ? 'selected' : '' }}>Archived</option>
+                    </select>
+                </div>
+                <div style="display: flex; gap: 0.5rem;">
+                    <button type="submit" class="btn-primary" style="padding: 0.75rem 1.5rem; margin: 0;"><i class="bi bi-funnel"></i> Filter</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="table-card">
+            <div class="table-header">
+                <h3>{% if showStaffOnly is defined and showStaffOnly %}Staff Members ({{ users|length }}){% else %}All Users ({{ users|length }}){% endif %}</h3>
+                <a href="{{ path('app_user_new') }}" class="view-all-link" style="background: #3b82f6; color: white; padding: 0.5rem 1rem; border-radius: 6px; text-decoration: none; display: inline-flex; align-items: center; gap: 0.5rem;"><i class="bi bi-plus-circle"></i> Create New User</a>
+            </div>
+            <div class="table-content">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Last Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Status</th>
+                            <th>Date Created</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                            <tr>
+                                <td>#{{ user.id }}</td>
+                                <td><strong>{{ user.name ?: 'N/A' }}</strong></td>
+                                <td><strong>{{ user.lastName ?: 'N/A' }}</strong></td>
+                                <td>{{ user.email }}</td>
+                                <td>
+                                    {% set primaryRole = 'ROLE_USER' %}
+                                    {% if 'ROLE_ADMIN' in user.roles %}
+                                        {% set primaryRole = 'ROLE_ADMIN' %}
+                                    {% elseif 'ROLE_STAFF' in user.roles %}
+                                        {% set primaryRole = 'ROLE_STAFF' %}
+                                    {% endif %}
+                                    <span class="role-badge" style="padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem;
+                                        {% if primaryRole == 'ROLE_ADMIN' %}background: #fef3c7; color: #92400e;
+                                        {% elseif primaryRole == 'ROLE_STAFF' %}background: #dbeafe; color: #1e40af;
+                                        {% else %}background: #e5e7eb; color: #374151;{% endif %}">
+                                        {{ primaryRole|replace({'ROLE_': ''}) }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span style="padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem;
+                                        {% if user.status == 'active' %}background: #d1fae5; color: #065f46;
+                                        {% elseif user.status == 'disabled' %}background: #fee2e2; color: #991b1b;
+                                        {% else %}background: #e5e7eb; color: #374151;{% endif %}">
+                                        {{ user.status|capitalize }}
+                                    </span>
+                                </td>
+                                <td>{{ user.createdAt ? user.createdAt|date('M d, Y') : 'N/A' }}</td>
+                                <td>
+                                    <div class="actions" style="display: flex; gap: 0.5rem; align-items: center; flex-wrap: nowrap;">
+                                        <a href="{{ path('app_user_show', {'id': user.id}) }}" class="action-btn view-btn">
+                                            <i class="bi bi-eye"></i> View
+                                        </a>
+                                        <a href="{{ path('app_user_edit', {'id': user.id}) }}" class="action-btn edit-btn">
+                                            <i class="bi bi-pencil"></i> Edit
+                                        </a>
+                                        {% if user.status == 'active' %}
+                                            <form method="post" action="{{ path('app_user_toggle_status', {'id': user.id}) }}" style="display: inline; margin: 0; padding: 0;" onsubmit="return confirm('Are you sure you want to disable this user?');">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('toggle-status' ~ user.id) }}">
+                                                <input type="hidden" name="status" value="disabled">
+                                                <button type="submit" class="action-btn" style="background-color: #f59e0b; color: #ffffff; box-shadow: 0 1px 2px rgba(245, 158, 11, 0.2);">
+                                                    <i class="bi bi-x-circle"></i> Disable
+                                                </button>
+                                            </form>
+                                        {% elseif user.status == 'disabled' %}
+                                            <form method="post" action="{{ path('app_user_toggle_status', {'id': user.id}) }}" style="display: inline; margin: 0; padding: 0;">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('toggle-status' ~ user.id) }}">
+                                                <input type="hidden" name="status" value="active">
+                                                <button type="submit" class="action-btn" style="background-color: #10b981; color: #ffffff; box-shadow: 0 1px 2px rgba(16, 185, 129, 0.2);">
+                                                    <i class="bi bi-check-circle"></i> Enable
+                                                </button>
+                                            </form>
+                                        {% endif %}
+                                        {% if user.status != 'archived' %}
+                                            <form method="post" action="{{ path('app_user_toggle_status', {'id': user.id}) }}" style="display: inline; margin: 0; padding: 0;" onsubmit="return confirm('Are you sure you want to archive this user?');">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('toggle-status' ~ user.id) }}">
+                                                <input type="hidden" name="status" value="archived">
+                                                <button type="submit" class="action-btn" style="background-color: #6b7280; color: #ffffff; box-shadow: 0 1px 2px rgba(107, 114, 128, 0.2);">
+                                                    <i class="bi bi-archive"></i> Archive
+                                                </button>
+                                            </form>
+                                        {% endif %}
+                                        <form method="post" action="{{ path('app_user_delete', {'id': user.id}) }}" style="display: inline; margin: 0; padding: 0;" onsubmit="return confirm('⚠️ Are you sure you want to delete this user account?\n\nUser: {{ user.email }}\n\nThis action cannot be undone!');">
+                                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
+                                            <button type="submit" class="action-btn delete-btn">
+                                                <i class="bi bi-trash"></i> Delete
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="8" class="empty-state">No users found</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}
+

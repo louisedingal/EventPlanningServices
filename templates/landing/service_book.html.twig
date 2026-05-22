@@ -1,0 +1,230 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Book {{ package.name }} - Lux Events{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('styles/landing.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        .booking-page {
+            min-height: 100vh;
+            padding: 120px 20px 60px;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .booking-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: #475569;
+            text-decoration: none;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+        .booking-back:hover { color: #1e293b; }
+        .package-summary {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            color: #fff;
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 12px 40px rgba(15, 23, 42, 0.2);
+            overflow: hidden;
+        }
+        .package-summary-image {
+            width: calc(100% + 4rem);
+            height: clamp(220px, 35vh, 300px);
+            margin: -2rem -2rem 1.5rem;
+            overflow: hidden;
+            background: rgba(0, 0, 0, 0.25);
+        }
+        .package-summary-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center center;
+            display: block;
+        }
+        .package-summary h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2rem;
+            margin: 0 0 0.75rem;
+        }
+        .package-summary p {
+            color: rgba(255,255,255,0.85);
+            line-height: 1.6;
+            margin: 0 0 1rem;
+        }
+        .package-price {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.75rem;
+            color: #fbbf24;
+            font-weight: 700;
+        }
+        .booking-form-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+            border: 1px solid #e2e8f0;
+        }
+        .booking-form-card h2 {
+            font-family: 'Playfair Display', serif;
+            color: #1e293b;
+            margin: 0 0 0.5rem;
+        }
+        .booking-form-card .hint {
+            color: #64748b;
+            margin-bottom: 1.5rem;
+        }
+        .booking-form .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.25rem;
+        }
+        @media (max-width: 640px) {
+            .booking-form .form-row { grid-template-columns: 1fr; }
+        }
+        .booking-form .form-group {
+            margin-bottom: 1.25rem;
+        }
+        .booking-form label {
+            display: block;
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+        .booking-form input,
+        .booking-form textarea {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .booking-form input:focus,
+        .booking-form textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+        }
+        .booking-form .form-error {
+            color: #dc2626;
+            font-size: 0.85rem;
+            margin-top: 0.35rem;
+        }
+        .btn-book-submit {
+            width: 100%;
+            margin-top: 0.5rem;
+            padding: 1rem 1.5rem;
+            background: linear-gradient(135deg, #b8860b, #daa520);
+            color: #fff;
+            border: none;
+            border-radius: 12px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .btn-book-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(184, 134, 11, 0.35);
+        }
+        .flash-banner {
+            padding: 1rem 1.25rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+        }
+        .flash-banner.success {
+            background: #dcfce7;
+            color: #166534;
+            border: 1px solid #86efac;
+        }
+        .flash-banner.error {
+            background: #fee2e2;
+            color: #991b1b;
+            border: 1px solid #fca5a5;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="landing-background"></div>
+
+    <div class="booking-page">
+        <a href="{{ path('app_landing') }}#services" class="booking-back">
+            <i class="bi bi-arrow-left"></i> Back to services
+        </a>
+
+        {% for message in app.flashes('success') %}
+            <div class="flash-banner success">{{ message }}</div>
+        {% endfor %}
+        {% for message in app.flashes('error') %}
+            <div class="flash-banner error">{{ message }}</div>
+        {% endfor %}
+
+        <div class="package-summary">
+            {% if package.imagePath %}
+                <div class="package-summary-image">
+                    <img src="{{ asset(package.imagePath) }}" alt="{{ package.name }}">
+                </div>
+            {% endif %}
+            <h1>{{ package.name }}</h1>
+            <p>{{ package.description ?: 'Professional event planning tailored to your celebration.' }}</p>
+            <div class="package-price">₱{{ package.price|number_format(2, '.', ',') }}</div>
+        </div>
+
+        <div class="booking-form-card">
+            <h2>Book this service</h2>
+            <p class="hint">Choose your preferred date and time. Our team will review your request and confirm availability.</p>
+
+            {{ form_start(form, { attr: { class: 'booking-form' } }) }}
+                <div class="form-row">
+                    <div class="form-group">
+                        {{ form_label(form.preferredDate) }}
+                        {{ form_widget(form.preferredDate) }}
+                        {{ form_errors(form.preferredDate) }}
+                    </div>
+                    <div class="form-group">
+                        {{ form_label(form.preferredTime) }}
+                        {{ form_widget(form.preferredTime) }}
+                        {{ form_errors(form.preferredTime) }}
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        {{ form_label(form.estimatedGuestCount) }}
+                        {{ form_widget(form.estimatedGuestCount) }}
+                        {{ form_errors(form.estimatedGuestCount) }}
+                    </div>
+                    <div class="form-group">
+                        {{ form_label(form.contactPhone) }}
+                        {{ form_widget(form.contactPhone) }}
+                        {{ form_errors(form.contactPhone) }}
+                    </div>
+                </div>
+                <div class="form-group">
+                    {{ form_label(form.preferredVenue) }}
+                    {{ form_widget(form.preferredVenue) }}
+                    {{ form_errors(form.preferredVenue) }}
+                </div>
+                <div class="form-group">
+                    {{ form_label(form.theme) }}
+                    {{ form_widget(form.theme) }}
+                    {{ form_errors(form.theme) }}
+                </div>
+                <div class="form-group">
+                    {{ form_label(form.specialRequests) }}
+                    {{ form_widget(form.specialRequests) }}
+                    {{ form_errors(form.specialRequests) }}
+                </div>
+                <button type="submit" class="btn-book-submit">
+                    <i class="bi bi-calendar-check"></i> Submit booking request
+                </button>
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}

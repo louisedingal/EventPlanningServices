@@ -1,0 +1,714 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Register - Lux Events{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0f172a;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .register-wrapper {
+            display: flex;
+            min-height: 100vh;
+            position: relative;
+            overflow: hidden;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+
+        /* Unified background image - covers entire page */
+        .register-wrapper::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url('https://i.pinimg.com/1200x/56/33/1a/56331af6b9e32e59343ac27866b206f1.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            z-index: 0;
+        }
+
+        /* Subtle overlay for better content visibility */
+        .register-wrapper::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .register-form-container {
+            position: relative;
+            z-index: 2;
+            width: 100%;
+            max-width: 500px;
+            background-color: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 16px;
+            padding: 3rem;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .register-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .register-title {
+            font-family: 'Poppins', sans-serif;
+            font-size: 2.5rem;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.5px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .register-subtitle {
+            font-size: 1rem;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 400;
+            text-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .flash-message {
+            padding: 1rem 1.25rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .flash-success {
+            background-color: rgba(209, 250, 229, 0.9);
+            color: #065f46;
+            border: 1px solid rgba(167, 243, 208, 0.5);
+            backdrop-filter: blur(10px);
+        }
+
+        .flash-error {
+            background-color: rgba(254, 226, 226, 0.9);
+            color: #991b1b;
+            border: 1px solid rgba(254, 202, 202, 0.5);
+            backdrop-filter: blur(10px);
+        }
+
+        .register-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .form-field-group {
+            position: relative;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.95);
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-family: 'Roboto', sans-serif;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        .form-input-wrapper {
+            position: relative;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 1rem 1.25rem;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            font-size: 1rem;
+            color: #ffffff;
+            transition: all 0.3s ease;
+            font-family: 'Roboto', sans-serif;
+            font-weight: 400;
+        }
+
+        .form-input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+            background: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.3);
+        }
+
+        .form-input-icon {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: rgba(255, 255, 255, 0.8);
+            font-size: 1.125rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            opacity: 1 !important;
+            z-index: 10;
+            pointer-events: auto;
+            display: block !important;
+            visibility: visible !important;
+        }
+
+        .form-input-icon i {
+            display: inline-block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+        }
+
+        .form-input-icon:hover {
+            color: #ffffff;
+        }
+
+        /* Make icons fully visible when input has value */
+        .form-input-wrapper:has(.form-input:not(:placeholder-shown)) .form-input-icon,
+        .form-input-wrapper:has(.form-input[value]:not([value=""])) .form-input-icon,
+        .form-input-wrapper:has(.form-input:focus) .form-input-icon {
+            color: #000000 !important;
+            opacity: 1 !important;
+        }
+
+        .form-input-wrapper:has(.form-input:not(:placeholder-shown)) .form-input-icon i,
+        .form-input-wrapper:has(.form-input[value]:not([value=""])) .form-input-icon i,
+        .form-input-wrapper:has(.form-input:focus) .form-input-icon i {
+            color: #000000 !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+
+        .password-toggle {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 0;
+        }
+
+        .form-error {
+            color: #ef4444;
+            font-size: 0.8125rem;
+            margin-top: 0.375rem;
+            font-weight: 500;
+        }
+
+        .form-error ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .form-error ul li {
+            margin-top: 0.25rem;
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            margin-top: 0.5rem;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: #667eea;
+            margin-top: 0.125rem;
+            flex-shrink: 0;
+        }
+
+        .checkbox-group label {
+            font-size: 0.875rem;
+            color: rgba(255, 255, 255, 0.9);
+            cursor: pointer;
+            user-select: none;
+            font-family: 'Roboto', sans-serif;
+            font-weight: 400;
+            line-height: 1.5;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        .terms-link {
+            color: #667eea;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .terms-link:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+
+        .btn-register-submit {
+            width: 100%;
+            padding: 1rem 2rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #ffffff;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+            font-family: 'Roboto', sans-serif;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+        }
+
+        .btn-register-submit:hover {
+            background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-register-submit:active {
+            transform: translateY(0);
+        }
+
+        .register-footer {
+            margin-top: 2rem;
+            text-align: center;
+        }
+
+        .register-footer-text {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.875rem;
+            font-family: 'Roboto', sans-serif;
+            font-weight: 400;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        .register-footer-link {
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.2s ease;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+        }
+
+        .register-footer-link:hover {
+            color: #fbbf24;
+            text-decoration: underline;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .register-wrapper {
+                padding: 1rem;
+            }
+
+            .register-form-container {
+                padding: 2rem 1.5rem;
+            }
+
+            .register-title {
+                font-size: 2rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .register-form-container {
+                padding: 1.5rem;
+            }
+
+            .register-title {
+                font-size: 1.75rem;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="register-wrapper">
+    <div class="register-form-container">
+        <div class="register-header">
+            <h1 class="register-title">Create Account</h1>
+            <p class="register-subtitle">Join us to start planning your perfect event</p>
+        </div>
+
+        {% for message in app.flashes('success') %}
+            <div class="flash-message flash-success">
+                <strong><i class="bi bi-check-circle"></i> Success</strong><br>
+                {{ message }}
+            </div>
+        {% endfor %}
+
+        {% for message in app.flashes('error') %}
+            <div class="flash-message flash-error">
+                <strong><i class="bi bi-exclamation-circle"></i> Error</strong><br>
+                {{ message }}
+            </div>
+        {% endfor %}
+
+        {{ form_start(registrationForm, {'attr': {'class': 'register-form'}}) }}
+            <div class="form-field-group">
+                <label for="registration_form_name" class="form-label">First Name</label>
+                <div class="form-input-wrapper">
+                    {{ form_widget(registrationForm.name, {
+                        'attr': {
+                            'class': 'form-input',
+                            'placeholder': 'Enter your first name',
+                            'autocomplete': 'given-name',
+                            'autofocus': true
+                        }
+                    }) }}
+                    <span class="form-input-icon">
+                        <i class="bi bi-person"></i>
+                    </span>
+                </div>
+                {{ form_errors(registrationForm.name) }}
+            </div>
+
+            <div class="form-field-group">
+                <label for="registration_form_lastName" class="form-label">Last Name</label>
+                <div class="form-input-wrapper">
+                    {{ form_widget(registrationForm.lastName, {
+                        'attr': {
+                            'class': 'form-input',
+                            'placeholder': 'Enter your last name',
+                            'autocomplete': 'family-name'
+                        }
+                    }) }}
+                    <span class="form-input-icon">
+                        <i class="bi bi-person-badge"></i>
+                    </span>
+                </div>
+                {{ form_errors(registrationForm.lastName) }}
+            </div>
+
+            <div class="form-field-group">
+                <label for="registration_form_username" class="form-label">Username</label>
+                <div class="form-input-wrapper">
+                    {{ form_widget(registrationForm.username, {
+                        'attr': {
+                            'class': 'form-input',
+                            'placeholder': 'Choose a username',
+                            'autocomplete': 'username'
+                        }
+                    }) }}
+                    <span class="form-input-icon">
+                        <i class="bi bi-person"></i>
+                    </span>
+                </div>
+                {{ form_errors(registrationForm.username) }}
+            </div>
+
+            <div class="form-field-group">
+                <label for="registration_form_email" class="form-label">E-mail</label>
+                <div class="form-input-wrapper">
+                    {{ form_widget(registrationForm.email, {
+                        'attr': {
+                            'class': 'form-input',
+                            'placeholder': 'Enter your email',
+                            'autocomplete': 'email'
+                        }
+                    }) }}
+                    <span class="form-input-icon">
+                        <i class="bi bi-envelope"></i>
+                    </span>
+                </div>
+                {{ form_errors(registrationForm.email) }}
+            </div>
+
+            <div class="form-field-group">
+                <label for="registration_form_plainPassword_first" class="form-label">Password</label>
+                <div class="form-input-wrapper">
+                    {{ form_widget(registrationForm.plainPassword.first, {
+                        'attr': {
+                            'class': 'form-input',
+                            'placeholder': 'Enter your password',
+                            'autocomplete': 'new-password'
+                        }
+                    }) }}
+                    <button type="button" class="form-input-icon password-toggle" onclick="togglePassword('registration_form_plainPassword_first', 'passwordToggleIcon1')" aria-label="Toggle password visibility">
+                        <i class="bi bi-eye" id="passwordToggleIcon1"></i>
+                    </button>
+                </div>
+                {{ form_errors(registrationForm.plainPassword.first) }}
+            </div>
+
+            <div class="form-field-group">
+                <label for="registration_form_plainPassword_second" class="form-label">Confirm Password</label>
+                <div class="form-input-wrapper">
+                    {{ form_widget(registrationForm.plainPassword.second, {
+                        'attr': {
+                            'class': 'form-input',
+                            'placeholder': 'Confirm your password',
+                            'autocomplete': 'new-password'
+                        }
+                    }) }}
+                    <button type="button" class="form-input-icon password-toggle" onclick="togglePassword('registration_form_plainPassword_second', 'passwordToggleIcon2')" aria-label="Toggle password visibility">
+                        <i class="bi bi-eye" id="passwordToggleIcon2"></i>
+                    </button>
+                </div>
+                {{ form_errors(registrationForm.plainPassword.second) }}
+            </div>
+
+            <div class="form-field-group">
+                <div class="checkbox-group">
+                    {{ form_widget(registrationForm.agreeTerms) }}
+                    {{ form_label(registrationForm.agreeTerms) }}
+                </div>
+                {{ form_errors(registrationForm.agreeTerms) }}
+            </div>
+
+            <button type="submit" class="btn-register-submit">
+                Create Account <i class="bi bi-arrow-right"></i>
+            </button>
+        {{ form_end(registrationForm) }}
+
+        <div class="register-footer">
+            <p class="register-footer-text">
+                Already have an account? <a href="{{ path('app_login') }}" class="register-footer-link">Sign in</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+<script>
+    function togglePassword(inputId, iconId) {
+        const passwordInput = document.getElementById(inputId);
+        const toggleIcon = document.getElementById(iconId);
+        
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            toggleIcon.classList.remove('bi-eye');
+            toggleIcon.classList.add('bi-eye-slash');
+        } else {
+            passwordInput.type = 'password';
+            toggleIcon.classList.remove('bi-eye-slash');
+            toggleIcon.classList.add('bi-eye');
+        }
+    }
+
+    // Update icon visibility and colors when inputs are filled
+    document.addEventListener('DOMContentLoaded', function() {
+        const nameInput = document.getElementById('registration_form_name');
+        const lastNameInput = document.getElementById('registration_form_lastName');
+        const emailInput = document.getElementById('registration_form_email');
+        const passwordInput1 = document.getElementById('registration_form_plainPassword_first');
+        const passwordInput2 = document.getElementById('registration_form_plainPassword_second');
+        const nameIcon = nameInput ? nameInput.parentElement.querySelector('.form-input-icon:not(.password-toggle)') : null;
+        const nameIconElement = nameIcon ? nameIcon.querySelector('i') : null;
+        const lastNameIcon = lastNameInput ? lastNameInput.parentElement.querySelector('.form-input-icon:not(.password-toggle)') : null;
+        const lastNameIconElement = lastNameIcon ? lastNameIcon.querySelector('i') : null;
+        const emailIcon = emailInput ? emailInput.parentElement.querySelector('.form-input-icon:not(.password-toggle)') : null;
+        const emailIconElement = emailIcon ? emailIcon.querySelector('i') : null;
+        const passwordToggle1 = document.getElementById('passwordToggleIcon1');
+        const passwordToggle2 = document.getElementById('passwordToggleIcon2');
+
+        function updateIconVisibility(input, iconElement) {
+            if (input && iconElement) {
+                // Always make icon visible
+                iconElement.style.display = 'inline-block';
+                iconElement.style.visibility = 'visible';
+                iconElement.style.opacity = '1';
+                
+                if (input.value.trim() !== '') {
+                    iconElement.style.color = '#000000';
+                    if (iconElement.parentElement) {
+                        iconElement.parentElement.style.color = '#000000';
+                        iconElement.parentElement.style.opacity = '1';
+                    }
+                } else {
+                    iconElement.style.color = 'rgba(255, 255, 255, 0.8)';
+                    if (iconElement.parentElement) {
+                        iconElement.parentElement.style.color = 'rgba(255, 255, 255, 0.8)';
+                    }
+                }
+            }
+        }
+
+        // Check on input, change, and paste events for name
+        if (nameInput && nameIconElement) {
+            nameInput.addEventListener('input', function() {
+                updateIconVisibility(nameInput, nameIconElement);
+            });
+            nameInput.addEventListener('keyup', function() {
+                updateIconVisibility(nameInput, nameIconElement);
+            });
+            nameInput.addEventListener('change', function() {
+                updateIconVisibility(nameInput, nameIconElement);
+            });
+            nameInput.addEventListener('paste', function() {
+                setTimeout(function() {
+                    updateIconVisibility(nameInput, nameIconElement);
+                }, 10);
+            });
+            updateIconVisibility(nameInput, nameIconElement);
+        }
+
+        // Check on input, change, and paste events for lastName
+        if (lastNameInput && lastNameIconElement) {
+            lastNameInput.addEventListener('input', function() {
+                updateIconVisibility(lastNameInput, lastNameIconElement);
+            });
+            lastNameInput.addEventListener('keyup', function() {
+                updateIconVisibility(lastNameInput, lastNameIconElement);
+            });
+            lastNameInput.addEventListener('change', function() {
+                updateIconVisibility(lastNameInput, lastNameIconElement);
+            });
+            lastNameInput.addEventListener('paste', function() {
+                setTimeout(function() {
+                    updateIconVisibility(lastNameInput, lastNameIconElement);
+                }, 10);
+            });
+            updateIconVisibility(lastNameInput, lastNameIconElement);
+        }
+
+        // Check on input, change, and paste events for email
+        if (emailInput && emailIconElement) {
+            emailInput.addEventListener('input', function() {
+                updateIconVisibility(emailInput, emailIconElement);
+            });
+            emailInput.addEventListener('keyup', function() {
+                updateIconVisibility(emailInput, emailIconElement);
+            });
+            emailInput.addEventListener('change', function() {
+                updateIconVisibility(emailInput, emailIconElement);
+            });
+            emailInput.addEventListener('paste', function() {
+                setTimeout(function() {
+                    updateIconVisibility(emailInput, emailIconElement);
+                }, 10);
+            });
+            // Check initial value
+            updateIconVisibility(emailInput, emailIconElement);
+        }
+
+        // Check on input, change, and paste events for password 1
+        if (passwordInput1 && passwordToggle1) {
+            passwordInput1.addEventListener('input', function() {
+                updateIconVisibility(passwordInput1, passwordToggle1);
+            });
+            passwordInput1.addEventListener('keyup', function() {
+                updateIconVisibility(passwordInput1, passwordToggle1);
+            });
+            passwordInput1.addEventListener('change', function() {
+                updateIconVisibility(passwordInput1, passwordToggle1);
+            });
+            passwordInput1.addEventListener('paste', function() {
+                setTimeout(function() {
+                    updateIconVisibility(passwordInput1, passwordToggle1);
+                }, 10);
+            });
+            // Check initial value
+            updateIconVisibility(passwordInput1, passwordToggle1);
+        }
+
+        // Check on input, change, and paste events for password 2
+        if (passwordInput2 && passwordToggle2) {
+            passwordInput2.addEventListener('input', function() {
+                updateIconVisibility(passwordInput2, passwordToggle2);
+            });
+            passwordInput2.addEventListener('keyup', function() {
+                updateIconVisibility(passwordInput2, passwordToggle2);
+            });
+            passwordInput2.addEventListener('change', function() {
+                updateIconVisibility(passwordInput2, passwordToggle2);
+            });
+            passwordInput2.addEventListener('paste', function() {
+                setTimeout(function() {
+                    updateIconVisibility(passwordInput2, passwordToggle2);
+                }, 10);
+            });
+            // Check initial value
+            updateIconVisibility(passwordInput2, passwordToggle2);
+        }
+
+        // Also check when form is loaded with pre-filled values
+        setTimeout(function() {
+            if (nameInput && nameIconElement) {
+                updateIconVisibility(nameInput, nameIconElement);
+            }
+            if (lastNameInput && lastNameIconElement) {
+                updateIconVisibility(lastNameInput, lastNameIconElement);
+            }
+            if (emailInput && emailIconElement) {
+                updateIconVisibility(emailInput, emailIconElement);
+            }
+            if (passwordInput1 && passwordToggle1) {
+                updateIconVisibility(passwordInput1, passwordToggle1);
+            }
+            if (passwordInput2 && passwordToggle2) {
+                updateIconVisibility(passwordInput2, passwordToggle2);
+            }
+        }, 100);
+
+        // Use MutationObserver to watch for value changes
+        if (nameInput && nameIconElement) {
+            const observer = new MutationObserver(function() {
+                updateIconVisibility(nameInput, nameIconElement);
+            });
+            observer.observe(nameInput, { attributes: true, attributeFilter: ['value'] });
+        }
+
+        if (lastNameInput && lastNameIconElement) {
+            const observer = new MutationObserver(function() {
+                updateIconVisibility(lastNameInput, lastNameIconElement);
+            });
+            observer.observe(lastNameInput, { attributes: true, attributeFilter: ['value'] });
+        }
+
+        if (emailInput && emailIconElement) {
+            const observer = new MutationObserver(function() {
+                updateIconVisibility(emailInput, emailIconElement);
+            });
+            observer.observe(emailInput, { attributes: true, attributeFilter: ['value'] });
+        }
+
+        if (passwordInput1 && passwordToggle1) {
+            const observer = new MutationObserver(function() {
+                updateIconVisibility(passwordInput1, passwordToggle1);
+            });
+            observer.observe(passwordInput1, { attributes: true, attributeFilter: ['value'] });
+        }
+
+        if (passwordInput2 && passwordToggle2) {
+            const observer = new MutationObserver(function() {
+                updateIconVisibility(passwordInput2, passwordToggle2);
+            });
+            observer.observe(passwordInput2, { attributes: true, attributeFilter: ['value'] });
+        }
+    });
+</script>
+{% endblock %}

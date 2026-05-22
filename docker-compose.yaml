@@ -1,0 +1,75 @@
+services:
+  mysql:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - EventPlanning_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        INSTALL_DEV_DEPS: "1"
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-8000}:8000"
+    env_file:
+      - path: .env
+        required: true
+      - path: .env.local
+        required: false
+    environment:
+      APP_ENV: dev
+      APP_DEBUG: "1"
+      DATABASE_URL: mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@mysql:3306/${MYSQL_DATABASE}?serverVersion=8.0.32&charset=utf8mb4
+      APP_URL: http://127.0.0.1:${APP_PORT:-8000}
+      DEFAULT_URI: http://127.0.0.1:${APP_PORT:-8000}
+    volumes:
+      - ./.env:/app/.env:ro
+      - ./.env.local:/app/.env.local:ro
+      - ./config:/app/config:ro
+      - ./src:/app/src:ro
+      - ./templates:/app/templates:ro
+      - ./public:/app/public
+      - ./docker/nginx.conf:/etc/nginx/sites-available/default:ro
+      - ./docker/entrypoint.sh:/usr/local/bin/entrypoint.sh:ro
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - EventPlanning_network
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    restart: unless-stopped
+    environment:
+      PMA_HOST: mysql
+      PMA_USER: ${MYSQL_USER}
+      PMA_PASSWORD: ${MYSQL_PASSWORD}
+    ports:
+      - "8080:80"
+    depends_on:
+      - mysql
+    networks:
+      - EventPlanning_network
+
+volumes:
+  mysql_data:
+
+networks:
+  EventPlanning_network:

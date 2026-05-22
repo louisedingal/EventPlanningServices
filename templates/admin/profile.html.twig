@@ -1,0 +1,253 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Admin Profile - Lux Events{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('styles/admin.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+{% endblock %}
+
+{% block body %}
+<div class="admin-container">
+    <!-- Sidebar -->
+    {% include 'admin/_sidebar.html.twig' %}
+    
+    <!-- Main Content -->
+    <main class="main-content">
+        {% include 'admin/_header.html.twig' with {title: 'My Profile'} %}
+        
+        <div class="profile-container">
+            <div class="profile-card">
+                <div class="profile-header">
+                    <div class="profile-avatar">
+                        <span class="avatar-initial">{{ user.email|first|upper }}</span>
+                    </div>
+                    <div class="profile-info">
+                        <h2>{{ user.email }}</h2>
+                        <p class="profile-role">
+                            {% if 'ROLE_ADMIN' in user.roles %}
+                                <span class="role-badge admin-badge">Administrator</span>
+                            {% else %}
+                                <span class="role-badge user-badge">User</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="profile-details">
+                    <div class="detail-section">
+                        <h3>Account Information</h3>
+                        <div class="detail-grid">
+                            <div class="detail-item">
+                                <span class="detail-label">Email Address</span>
+                                <span class="detail-value">{{ user.email }}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">User ID</span>
+                                <span class="detail-value">#{{ user.id }}</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="detail-label">Roles</span>
+                                <span class="detail-value">
+                                    {% for role in user.roles %}
+                                        <span class="role-tag">{{ role }}</span>
+                                    {% endfor %}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="profile-actions">
+                    <a href="{{ path('app_admin_change_password') }}" class="btn-primary">
+                        <i class="bi bi-lock"></i> Change Password
+                    </a>
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <a href="{{ path('app_admin_dashboard') }}" class="btn-secondary">
+                            <i class="bi bi-arrow-left"></i> Back to Dashboard
+                        </a>
+                    {% endif %}
+                    <form method="post" action="{{ path('app_logout') }}" class="logout-form-profile">
+                        <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
+                        <button type="submit" class="btn-logout-profile">
+                            <i class="bi bi-box-arrow-right"></i> Logout
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<style>
+.profile-container {
+    padding: 2rem;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.profile-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+}
+
+.profile-header {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding-bottom: 2rem;
+    border-bottom: 1px solid #e2e8f0;
+    margin-bottom: 2rem;
+}
+
+.profile-avatar {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.avatar-initial {
+    font-size: 2rem;
+    font-weight: 600;
+    color: white;
+}
+
+.profile-info h2 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.5rem;
+    color: #1e293b;
+}
+
+.profile-role {
+    margin: 0;
+}
+
+.role-badge {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.admin-badge {
+    background-color: #fef3c7;
+    color: #92400e;
+}
+
+.user-badge {
+    background-color: #dbeafe;
+    color: #1e40af;
+}
+
+.profile-details {
+    margin-bottom: 2rem;
+}
+
+.detail-section h3 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 1rem;
+}
+
+.detail-grid {
+    display: grid;
+    gap: 1rem;
+}
+
+.detail-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1rem;
+    background-color: #f8fafc;
+    border-radius: 8px;
+}
+
+.detail-label {
+    font-size: 0.875rem;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.detail-value {
+    font-size: 1rem;
+    color: #1e293b;
+    font-weight: 500;
+}
+
+.role-tag {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    background-color: #e2e8f0;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    margin-right: 0.5rem;
+}
+
+.profile-actions {
+    display: flex;
+    gap: 1rem;
+    padding-top: 2rem;
+    border-top: 1px solid #e2e8f0;
+}
+
+.btn-secondary {
+    padding: 0.75rem 1.5rem;
+    background-color: #f1f5f9;
+    color: #475569;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    text-decoration: none;
+    display: inline-block;
+    transition: all 0.2s;
+}
+
+.btn-secondary:hover {
+    background-color: #e2e8f0;
+    color: #334155;
+}
+
+.logout-form-profile {
+    display: inline-block;
+    margin: 0;
+    padding: 0;
+}
+
+.btn-logout-profile {
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+    color: #ffffff;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2);
+}
+
+.btn-logout-profile:hover {
+    background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3);
+}
+</style>
+{% endblock %}
+
+

@@ -1,0 +1,285 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Our Services - Lux Events{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('styles/landing.css') }}">
+    <link rel="stylesheet" href="{{ asset('styles/service-packages.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .services-container {
+            min-height: 100vh;
+            padding: 140px 20px 60px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .services-header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .services-header h1 {
+            font-family: "Playfair Display", serif;
+            font-size: 3rem;
+            color: #2c2c2c;
+            margin-bottom: 20px;
+            text-shadow: 0 2px 4px rgba(255, 255, 255, 0.8);
+        }
+
+        .services-header p {
+            font-size: 1.2rem;
+            color: #555;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 30px;
+            margin-top: 40px;
+            align-items: stretch;
+        }
+
+        a.service-card-link {
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            height: 100%;
+        }
+
+        .service-card {
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 25px rgba(184, 134, 11, 0.2);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            height: 100%;
+        }
+
+        .service-book-cta {
+            text-align: center;
+            margin-top: 1rem;
+            font-weight: 700;
+            color: #b8860b;
+            font-size: 0.95rem;
+        }
+
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(to right, #f4e4bc, #f8d7da, #f4e4bc);
+        }
+
+        .service-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 12px 35px rgba(184, 134, 11, 0.3);
+        }
+
+        .service-card-image {
+            width: calc(100% + 60px);
+            height: 200px;
+            margin: -30px -30px 20px;
+            overflow: hidden;
+            border-radius: 12px 12px 0 0;
+            background: linear-gradient(135deg, #f4e4bc 0%, #f8d7da 100%);
+        }
+
+        .service-card-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .service-icon {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .service-name {
+            font-family: "Playfair Display", serif;
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #2c2c2c;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .service-description {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            text-align: center;
+            min-height: 60px;
+        }
+
+        .service-price {
+            text-align: center;
+            font-size: 2rem;
+            font-weight: 700;
+            color: #b8860b;
+            margin-top: 20px;
+            font-family: "Playfair Display", serif;
+        }
+
+        .service-price-label {
+            font-size: 0.9rem;
+            color: #888;
+            font-weight: normal;
+            display: block;
+            margin-top: 5px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .empty-state h2 {
+            font-family: "Playfair Display", serif;
+            font-size: 2rem;
+            margin-bottom: 15px;
+        }
+
+        .back-to-home {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 12px 30px;
+            background: linear-gradient(to right, #f4e4bc, #f8d7da);
+            color: #2c2c2c;
+            text-decoration: none;
+            border-radius: 25px;
+            font-weight: 600;
+            transition: transform 0.3s ease;
+        }
+
+        .back-to-home:hover {
+            transform: translateY(-2px);
+        }
+
+        @media (max-width: 768px) {
+            .services-header h1 {
+                font-size: 2rem;
+            }
+
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .services-container {
+                padding: 120px 15px 40px;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="landing-background"></div>
+
+    <header>
+        <nav>
+            <div class="nav-content">
+                <div class="left-menu">
+                    <a href="{{ path('app_about') }}">About Us</a>
+                    <a href="{{ path('app_services') }}">Services</a>
+                    <a href="#">Portfolio</a>
+                </div>
+                <div class="logo">
+                    <a href="{{ path('app_landing') }}" title="Go to Home">
+                        <img src="{{ asset('img/logo1.png') }}" alt="Lux Events Logo">
+                    </a>
+                </div>
+                <div class="right-menu">
+                    {% if app.user and (is_granted('ROLE_ADMIN') or is_granted('ROLE_STAFF')) %}
+                        <a href="{{ path('app_admin_dashboard') }}" class="dashboard-btn-nav"><i class="bi bi-speedometer2"></i> Dashboard</a>
+                    {% endif %}
+                    <a href="#">Contact Us</a>
+                    {% if app.user %}
+                        <form method="post" action="{{ path('app_logout') }}" class="logout-form">
+                            <input type="hidden" name="_csrf_token" value="{{ csrf_token('logout') }}">
+                            <button type="submit" class="logout-btn-nav">Logout</button>
+                        </form>
+                    {% else %}
+                        <a href="{{ path('app_login') }}">Login</a>
+                    {% endif %}
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <div class="services-container">
+        <div class="services-header">
+            <h1>Our Services</h1>
+            <p>Discover our comprehensive event planning packages designed to make your special day unforgettable</p>
+        </div>
+
+        {% if not app.user %}
+            <p class="services-guest-hint" style="color: #555; margin-bottom: 1.5rem;">
+                Sign in to book a package. <a href="{{ path('app_login') }}" style="color: #b8860b;">Login</a>
+            </p>
+        {% endif %}
+
+        {% if services|length > 0 %}
+            <div class="services-grid">
+                {% for service in services %}
+                    {% include 'landing/_service_package_card.html.twig' with {
+                        package: service,
+                        card_variant: 'page',
+                        book_href: app.user ? path('app_service_book', { id: service.id }) : path('app_login'),
+                    } %}
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <h2>No Services Available</h2>
+                <p>We're currently updating our service packages. Please check back soon!</p>
+                <a href="{{ path('app_landing') }}" class="back-to-home">Back to Home</a>
+            </div>
+        {% endif %}
+    </div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <script>
+        // Add smooth scroll animation when cards come into view
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.service-package-card');
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry, index) => {
+                    if (entry.isIntersecting) {
+                        setTimeout(() => {
+                            entry.target.style.opacity = '1';
+                            entry.target.style.transform = 'translateY(0)';
+                        }, index * 100);
+                    }
+                });
+            }, {
+                threshold: 0.1
+            });
+
+            cards.forEach(card => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+                observer.observe(card);
+            });
+        });
+    </script>
+{% endblock %}
+

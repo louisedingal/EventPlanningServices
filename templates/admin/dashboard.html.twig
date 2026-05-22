@@ -1,0 +1,444 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Admin Dashboard - Lux Events{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('styles/admin.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+{% endblock %}
+
+{% block body %}
+<div class="admin-container">
+    <!-- Sidebar -->
+    {% include 'admin/_sidebar.html.twig' %}
+    
+    <!-- Main Content -->
+    <main class="main-content">
+        {% include 'admin/_header.html.twig' with {title: 'Dashboard'} %}
+        
+        <!-- Flash Messages -->
+        {% for message in app.flashes('error') %}
+            <div class="flash-message flash-error" style="position: fixed; top: 20px; right: 20px; background-color: #f8d7da; color: #721c24; padding: 15px 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); z-index: 1000; max-width: 400px; border: 1px solid #f5c6cb; animation: slideIn 0.3s ease-out;">
+                <strong><i class="bi bi-exclamation-triangle"></i> Access Denied</strong><br>
+                {{ message }}
+            </div>
+        {% endfor %}
+        
+        {% for message in app.flashes('success') %}
+            <div class="flash-message flash-success" style="position: fixed; top: 20px; right: 20px; background-color: #d4edda; color: #155724; padding: 15px 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); z-index: 1000; max-width: 400px; border: 1px solid #c3e6cb; animation: slideIn 0.3s ease-out;">
+                <strong><i class="bi bi-check-circle"></i> Success</strong><br>
+                {{ message }}
+            </div>
+        {% endfor %}
+
+        {% for message in app.flashes('info') %}
+            <div class="flash-message flash-success" style="position: fixed; top: 20px; right: 20px; background-color: #e0f2fe; color: #075985; padding: 15px 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); z-index: 1000; max-width: 400px; border: 1px solid #bae6fd; animation: slideIn 0.3s ease-out;">
+                <strong><i class="bi bi-info-circle"></i> Notice</strong><br>
+                {{ message }}
+            </div>
+        {% endfor %}
+        
+        <!-- KPI Cards -->
+        <div class="kpi-grid">
+            <a href="{{ path('app_user_index') }}" class="kpi-card" style="text-decoration: none; cursor: pointer; transition: all 0.2s ease;">
+                <div class="kpi-header">
+                    <i class="bi bi-people kpi-icon"></i>
+                    <span class="kpi-label">TOTAL USERS</span>
+                </div>
+                <div class="kpi-value">{{ totalUsers }}</div>
+            </a>
+            
+            <a href="{{ path('app_user_staff') }}" class="kpi-card" style="text-decoration: none; cursor: pointer; transition: all 0.2s ease;">
+                <div class="kpi-header">
+                    <i class="bi bi-person-badge kpi-icon"></i>
+                    <span class="kpi-label">TOTAL STAFF</span>
+                </div>
+                <div class="kpi-value">{{ totalStaff }}</div>
+            </a>
+            
+            <a href="{{ path('app_admin_records') }}" class="kpi-card" style="text-decoration: none; cursor: pointer; transition: all 0.2s ease;">
+                <div class="kpi-header">
+                    <i class="bi bi-box kpi-icon"></i>
+                    <span class="kpi-label">TOTAL RECORDS</span>
+                </div>
+                <div class="kpi-value">{{ totalRecords }}</div>
+            </a>
+            
+            <a href="{{ path('app_admin_pending_requests') }}" class="kpi-card" style="text-decoration: none; cursor: pointer; background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%); color: white; transition: all 0.2s ease;">
+                <div class="kpi-header">
+                    <i class="bi bi-envelope-exclamation kpi-icon" style="color: white;"></i>
+                    <span class="kpi-label" style="color: rgba(255,255,255,0.9);">PENDING REQUESTS</span>
+                </div>
+                <div class="kpi-value" style="color: white;">{{ totalPendingRequests }}</div>
+            </a>
+            
+            <a href="{{ path('app_event_index') }}" class="kpi-card" style="text-decoration: none; cursor: pointer; transition: all 0.2s ease;">
+                <div class="kpi-header">
+                    <i class="bi bi-calendar-check kpi-icon"></i>
+                    <span class="kpi-label">TOTAL EVENTS</span>
+                </div>
+                <div class="kpi-value">{{ totalEvents }}</div>
+            </a>
+            
+            <div class="kpi-card">
+                <div class="kpi-header">
+                    <i class="bi bi-currency-dollar kpi-icon"></i>
+                    <span class="kpi-label">TOTAL REVENUE</span>
+                </div>
+                <div class="kpi-value">₱{{ totalRevenue|number_format(0, '.', ',') }}</div>
+            </div>
+            
+            <div class="kpi-card">
+                <div class="kpi-header">
+                    <i class="bi bi-graph-up kpi-icon"></i>
+                    <span class="kpi-label">AVG EVENT PRICE</span>
+                </div>
+                <div class="kpi-value">₱{{ averageEventPrice|number_format(0, '.', ',') }}</div>
+            </div>
+        </div>
+        
+        <!-- Charts Section -->
+        <div class="charts-grid">
+            <!-- Events by Type Chart -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3>Events by Type</h3>
+                    <div class="chart-controls">
+                        <select class="chart-select">
+                            <option>All Time</option>
+                            <option>This Month</option>
+                            <option>This Year</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="chart-content">
+                    <div class="chart-legend">
+                        {% for type, count in eventsByType %}
+                            <div class="legend-item">
+                                <span class="legend-color" style="background-color: {{ cycle(['#FFD700', '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4'], loop.index0) }}"></span>
+                                <span class="legend-label">{{ type }} ({{ count }})</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    <div class="chart-bars">
+                        {# maxCountByType computed in controller for compatibility #}
+                        {% for type, count in eventsByType %}
+                            <div class="chart-bar">
+                                <div class="bar-fill" 
+                                     style="height: {{ (count / (maxCountByType ?: 1) * 100)|round }}%; 
+                                            background-color: {{ cycle(['#FFD700', '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4'], loop.index0) }};">
+                                </div>
+                                <span class="bar-label">{{ count }}</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Monthly Revenue Chart -->
+            <div class="chart-card">
+                <div class="chart-header">
+                    <h3>Monthly Revenue</h3>
+                    <div class="chart-controls">
+                        <select class="chart-select">
+                            <option>This Year</option>
+                            <option>Last Year</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="chart-content">
+                    <div class="revenue-chart">
+                        {% for month, revenue in monthlyRevenue %}
+                            <div class="revenue-bar">
+                                <div class="revenue-fill" 
+                                     style="height: {{ (revenue / (maxMonthlyRevenue ?: 1) * 100)|round }}%;">
+                                </div>
+                                <span class="revenue-label">₱{{ revenue|number_format(0, '.', ',') }}</span>
+                                <span class="month-label">{{ month }}</span>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Recent Events Table -->
+        <div class="table-card">
+            <div class="table-header">
+                <h3>Recent Events</h3>
+                <a href="{{ path('app_event_index') }}" class="view-all-link">View All →</a>
+            </div>
+            <div class="table-content">
+                <table class="data-table" id="events-table">
+                    <thead id="events-thead">
+                        <tr>
+                            <th>ID</th>
+                            <th>CUSTOMER NAME</th>
+                            <th>EVENT TYPE</th>
+                            <th>EVENT DATE</th>
+                            <th>VENUE</th>
+                            <th>THEME</th>
+                            <th>GUESTS</th>
+                            <th>PRICE</th>
+                            <th>ACTIONS</th>
+                        </tr>
+                    </thead>
+                    <tbody id="events-tbody">
+                        {% for event in recentEvents|reverse %}
+                            <tr>
+                                <td><strong>#{{ event.id }}</strong></td>
+                                <td>{{ event.customerName }}</td>
+                                <td>
+                                    <span class="event-type-badge event-type-{{ event.eventType|lower }}">
+                                        {{ event.eventType }}
+                                    </span>
+                                </td>
+                                <td>{{ event.eventDate ? event.eventDate|date('M d, Y h:i A') : '-' }}</td>
+                                <td>{{ event.venue ?? '-' }}</td>
+                                <td>{{ event.theme ?? '-' }}</td>
+                                <td>{{ event.guestCount ?? '-' }}</td>
+                                <td><strong>₱{{ event.price|number_format(2) }}</strong></td>
+                                <td>
+                                    <div class="actions">
+                                        <a href="{{ path('app_event_show', {'id': event.id}) }}" class="action-btn view-btn">
+                                            <i class="bi bi-eye"></i> View
+                                        </a>
+                                        <a href="{{ path('app_event_edit', {'id': event.id}) }}" class="action-btn edit-btn">
+                                            <i class="bi bi-pencil"></i> Edit
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="9" class="empty-state">
+                                    <p>No events found</p>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Recent Activities Table -->
+        <div class="table-card">
+            <div class="table-header">
+                <h3>Recent Activities</h3>
+                <a href="{{ path('app_activity_log_index') }}" class="view-all-link">View All Logs →</a>
+            </div>
+            <div class="table-content">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Timestamp</th>
+                            <th>User</th>
+                            <th>Role</th>
+                            <th>Action</th>
+                            <th>Entity</th>
+                            <th>Description</th>
+                            <th>Details</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for activity in recentActivities %}
+                            <tr>
+                                <td>{{ activity.createdAt|date('Y-m-d H:i:s') }}</td>
+                                <td><strong>{{ activity.userEmail }}</strong></td>
+                                <td>
+                                    <span class="role-badge" style="padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem; 
+                                        {% if activity.userRole == 'ROLE_ADMIN' %}background: #fef3c7; color: #92400e;
+                                        {% elseif activity.userRole == 'ROLE_STAFF' %}background: #dbeafe; color: #1e40af;
+                                        {% else %}background: #e5e7eb; color: #374151;{% endif %}">
+                                        {{ activity.userRole }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="action-badge" style="padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600;
+                                        {% if activity.action == 'Create' %}background: #d1fae5; color: #065f46;
+                                        {% elseif activity.action == 'Update' %}background: #dbeafe; color: #1e40af;
+                                        {% elseif activity.action == 'Delete' %}background: #fee2e2; color: #991b1b;
+                                        {% elseif activity.action == 'Login' %}background: #fef3c7; color: #92400e;
+                                        {% elseif activity.action == 'Logout' %}background: #f3f4f6; color: #374151;
+                                        {% else %}background: #e2e8f0; color: #475569;{% endif %}">
+                                        {{ activity.action }}
+                                    </span>
+                                </td>
+                                <td>
+                                    {% if activity.entityType %}
+                                        {{ activity.entityType }}{% if activity.entityId %} #{{ activity.entityId }}{% endif %}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td>{{ activity.description ?: '-' }}</td>
+                                <td>
+                                    <a href="{{ path('app_activity_log_show', {'id': activity.id}) }}" class="action-btn view-btn">
+                                        <i class="bi bi-eye"></i> View
+                                    </a>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="7" class="empty-state">
+                                    <p>No recent activities</p>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Event Requests Section -->
+        <div id="event-requests-section" class="table-card" style="margin-top: 2rem;">
+            <div class="table-header">
+                <h3>Pending Event Requests ({{ totalPendingRequests }})</h3>
+            </div>
+            <div class="table-responsive">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Source</th>
+                            <th>Client</th>
+                            <th>Event Type</th>
+                            <th>Preferred Date</th>
+                            <th>Guest Count</th>
+                            <th>Budget</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if pendingEventRequests|length > 0 %}
+                            {% for request in pendingEventRequests %}
+                                <tr>
+                                    <td>{{ request.createdAt|date('Y-m-d H:i') }}</td>
+                                    <td>{% include 'admin/_event_request_source_badge.html.twig' with { request: request } %}</td>
+                                    <td><strong>{{ request.requestedBy ? request.requestedBy.email : 'Deleted user' }}</strong></td>
+                                    <td>{{ request.eventType }}</td>
+                                    <td>{{ request.preferredDate ? request.preferredDate|date('Y-m-d') : '-' }}</td>
+                                    <td>{{ request.estimatedGuestCount ?? '-' }}</td>
+                                    <td>{{ request.budget ?? '-' }}</td>
+                                    <td>
+                                        <span class="status-badge pending" style="padding: 0.35rem 0.75rem; border-radius: 6px; font-size: 0.8rem; font-weight: 600; background: #fef3c7; color: #92400e; text-transform: uppercase;">
+                                            {{ request.status }}
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div style="display: flex; gap: 0.5rem; align-items: center;">
+                                            <button class="action-btn view-btn" onclick="openRequestModal({{ request.id }})" style="padding: 0.5rem 1rem;">
+                                                <i class="bi bi-eye"></i> View
+                                            </button>
+                                            <form method="post" action="{{ path('app_admin_event_request_mark_done', {'id': request.id}) }}" style="display: inline-block; margin: 0;">
+                                                <input type="hidden" name="_token" value="{{ csrf_token('mark_done_' ~ request.id) }}">
+                                                <button type="submit" class="action-btn" style="padding: 0.5rem 1rem; background: #10b981; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 600; transition: all 0.2s ease;" onmouseover="this.style.background='#059669'" onmouseout="this.style.background='#10b981'">
+                                                    <i class="bi bi-check-circle"></i> Done
+                                                </button>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% else %}
+                            <tr>
+                                <td colspan="9" class="empty-state">
+                                    <p>No pending event requests</p>
+                                </td>
+                            </tr>
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- Event Request Modal -->
+        <div id="requestModal" class="modal" style="display: none; position: fixed; z-index: 1100; left: 0; top: 0; width: 100%; height: 100%; overflow: auto; background-color: rgba(0,0,0,0.5);">
+            <div class="modal-content" style="background-color: #fefefe; margin: 5% auto; padding: 2rem; border: none; border-radius: 12px; width: 90%; max-width: 700px; box-shadow: 0 8px 32px rgba(0,0,0,0.2);">
+                <span class="close" onclick="closeRequestModal()" style="color: #aaa; float: right; font-size: 28px; font-weight: bold; cursor: pointer; line-height: 20px;">&times;</span>
+                <h2 style="margin-top: 0; color: #1e293b;">Event Request Details</h2>
+                <div id="requestModalContent">
+                    <!-- Content will be loaded dynamically -->
+                </div>
+            </div>
+        </div>
+        
+        {% include 'admin/_event_request_modal_script.html.twig' %}
+
+    </main>
+</div>
+{% endblock %}
+
+{% block javascripts %}
+    {{ parent() }}
+    <style>
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+        
+        .flash-message {
+            animation: slideIn 0.3s ease-out;
+        }
+        
+        .flash-message.fade-out {
+            animation: slideOut 0.3s ease-out;
+        }
+    </style>
+    <script>
+        // Simple chart interactions
+        document.addEventListener('DOMContentLoaded', function() {
+            // Auto-hide flash messages after 5 seconds
+            const flashMessages = document.querySelectorAll('.flash-message');
+            flashMessages.forEach(function(message) {
+                setTimeout(function() {
+                    message.classList.add('fade-out');
+                    setTimeout(function() {
+                        message.remove();
+                    }, 300);
+                }, 5000);
+            });
+            
+            // Add hover effects to chart bars
+            const chartBars = document.querySelectorAll('.chart-bar, .revenue-bar');
+            chartBars.forEach(bar => {
+                bar.addEventListener('mouseenter', function() {
+                    this.style.transform = 'scale(1.05)';
+                });
+                bar.addEventListener('mouseleave', function() {
+                    this.style.transform = 'scale(1)';
+                });
+            });
+            
+            // Sidebar toggle (optional — toggle control not present on all admin layouts)
+            const sidebarToggle = document.querySelector('.sidebar-toggle');
+            const sidebar = document.querySelector('.sidebar');
+            if (sidebarToggle && sidebar) {
+                sidebarToggle.addEventListener('click', function() {
+                    sidebar.classList.toggle('collapsed');
+                });
+            }
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,19 @@
+<header class="main-header">
+    <div class="main-header-title-wrap">
+        <h1>{{ title|default('Dashboard') }}</h1>
+        {% if app.session.get('auth_provider') == 'google' %}
+            <span class="auth-provider-badge" title="Authenticated via Google OAuth">
+                <i class="bi bi-google"></i> Signed in with Google
+            </span>
+        {% endif %}
+    </div>
+    <div class="header-actions">
+        {% if showCreateButton is defined and showCreateButton %}
+            <a href="{{ createButtonPath|default('#') }}" class="btn-primary">
+                {{ createButtonText|default('Create') }}
+            </a>
+        {% endif %}
+    </div>
+</header>
+
+

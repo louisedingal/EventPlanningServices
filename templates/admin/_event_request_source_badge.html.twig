@@ -1,0 +1,9 @@
+{% if request.isFromMobileApp %}
+    <span class="source-badge source-mobile" title="Submitted from Dingal mobile app">
+        <i class="bi bi-phone"></i> Mobile app
+    </span>
+{% else %}
+    <span class="source-badge source-web" title="Submitted from website">
+        <i class="bi bi-globe"></i> Website
+    </span>
+{% endif %}

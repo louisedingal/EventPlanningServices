@@ -1,0 +1,65 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}View Service Package - Lux Events{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('styles/admin.css') }}">
+{% endblock %}
+
+{% block body %}
+<div class="admin-container">
+    {% include 'admin/_sidebar.html.twig' %}
+    <main class="main-content">
+        {% include 'admin/_header.html.twig' with {title: 'View Service Package'} %}
+
+        <div class="table-card">
+            <div class="table-header">
+                <h3>Service Package Details</h3>
+                <div>
+                    <a href="{{ path('app_service_package_index') }}" class="view-all-link">← Back to list</a>
+                    {% if isAdmin or service_package.createdBy == currentUser %}
+                        <a href="{{ path('app_service_package_edit', {id: service_package.id}) }}" class="view-all-link" style="margin-left:12px;">Edit →</a>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="table-content">
+                <table class="data-table">
+                    <tbody>
+                        <tr>
+                            <th style="width:220px;">ID</th>
+                            <td>#{{ service_package.id }}</td>
+                        </tr>
+                        <tr>
+                            <th>Name</th>
+                            <td>{{ service_package.name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Description</th>
+                            <td>{{ service_package.description ?: '-' }}</td>
+                        </tr>
+                        <tr>
+                            <th>Price</th>
+                            <td><strong>₱{{ service_package.price|number_format(2) }}</strong></td>
+                        </tr>
+                        <tr>
+                            <th>Photo</th>
+                            <td>
+                                {% if service_package.imagePath %}
+                                    <img src="{{ asset(service_package.imagePath) }}" alt="{{ service_package.name }}" class="package-detail-image">
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}
+
+
+
+

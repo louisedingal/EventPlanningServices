@@ -1,0 +1,503 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}About Us - Lux Events{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('styles/landing.css') }}">
+    <style>
+        .about-page {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 40%, #0b1220 100%);
+            color: #ffffff;
+        }
+
+        .about-hero {
+            position: relative;
+            padding: 5rem 0 3rem;
+            overflow: hidden;
+        }
+
+        .about-hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background:
+                radial-gradient(900px 600px at 15% 20%, rgba(59, 130, 246, 0.22), transparent 60%),
+                radial-gradient(900px 600px at 85% 25%, rgba(245, 158, 11, 0.18), transparent 55%),
+                radial-gradient(900px 600px at 50% 90%, rgba(236, 72, 153, 0.12), transparent 60%);
+            pointer-events: none;
+        }
+
+        .about-container {
+            position: relative;
+            z-index: 1;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .about-topbar {
+            position: sticky;
+            top: 0;
+            z-index: 5;
+            background: rgba(15, 23, 42, 0.55);
+            backdrop-filter: blur(16px) saturate(160%);
+            -webkit-backdrop-filter: blur(16px) saturate(160%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.10);
+        }
+
+        .about-topbar-inner {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 0.9rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+        }
+
+        @keyframes about-logo-float {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-3px) rotate(1.5deg);
+            }
+        }
+
+        @keyframes about-logo-glow {
+            0%, 100% {
+                box-shadow: 0 0 0 0 rgba(251, 191, 36, 0.25), 0 4px 14px rgba(0, 0, 0, 0.2);
+            }
+            50% {
+                box-shadow: 0 0 0 6px rgba(251, 191, 36, 0.12), 0 8px 22px rgba(59, 130, 246, 0.18);
+            }
+        }
+
+        .about-logo-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            color: rgba(255, 255, 255, 0.92);
+            font-family: 'Manrope', sans-serif;
+            font-weight: 800;
+            letter-spacing: 0.2px;
+            transition: color 0.25s ease, transform 0.25s ease;
+        }
+
+        .about-logo-link:hover {
+            color: #ffffff;
+        }
+
+        .about-logo-link:active {
+            transform: scale(0.98);
+        }
+
+        .about-logo-link img {
+            width: 42px;
+            height: 42px;
+            object-fit: contain;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            padding: 0.35rem;
+            animation:
+                about-logo-float 3.2s ease-in-out infinite,
+                about-logo-glow 2.8s ease-in-out infinite;
+            transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.25s ease;
+            will-change: transform;
+        }
+
+        .about-logo-link:hover img {
+            animation-play-state: paused;
+            transform: scale(1.12) rotate(-2deg);
+            border-color: rgba(255, 255, 255, 0.35);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .about-logo-link img {
+                animation: none;
+            }
+
+            .about-logo-link:hover img {
+                transform: none;
+            }
+        }
+
+        .about-title {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.25rem, 3.5vw, 3.5rem);
+            line-height: 1.1;
+            margin: 0 0 1rem;
+            letter-spacing: -0.02em;
+        }
+
+        .about-subtitle {
+            font-family: 'Manrope', sans-serif;
+            font-size: 1.05rem;
+            line-height: 1.8;
+            color: rgba(255, 255, 255, 0.82);
+            max-width: 70ch;
+            margin: 0;
+        }
+
+        /* Override landing.css `.about-section` (light gray) — scoped to this page only */
+        .about-page .about-section {
+            background: transparent !important;
+            padding: 3rem 0 !important;
+            color: inherit;
+        }
+
+        .about-section {
+            padding: 3rem 0;
+        }
+
+        .about-card {
+            background: rgba(255, 255, 255, 0.10);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 18px;
+            padding: 2rem;
+            box-shadow: 0 14px 40px rgba(0, 0, 0, 0.22);
+            backdrop-filter: blur(18px) saturate(160%);
+            -webkit-backdrop-filter: blur(18px) saturate(160%);
+        }
+
+        /* Story + values: solid light cards so text never fights landing.css or parent color */
+        .about-page .about-grid .about-card {
+            background: #ffffff;
+            border: 1px solid rgba(15, 23, 42, 0.08);
+            box-shadow: 0 12px 32px rgba(15, 23, 42, 0.08);
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+        }
+
+        .about-grid {
+            display: grid;
+            grid-template-columns: 1.2fr 0.8fr;
+            gap: 1.5rem;
+            align-items: start;
+        }
+
+        .about-h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.75rem;
+            margin: 0 0 1rem;
+        }
+
+        .about-page .about-grid .about-h2 {
+            color: #0f172a;
+        }
+
+        .about-p {
+            font-family: 'Manrope', sans-serif;
+            color: rgba(255, 255, 255, 0.82);
+            line-height: 1.85;
+            margin: 0 0 1rem;
+        }
+
+        .about-page .about-grid .about-p {
+            color: #475569;
+        }
+
+        .values-list {
+            display: grid;
+            gap: 0.75rem;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .value-item {
+            display: flex;
+            gap: 0.75rem;
+            align-items: flex-start;
+        }
+
+        .value-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 999px;
+            margin-top: 0.5rem;
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.08);
+            flex: 0 0 auto;
+        }
+
+        .about-page .about-grid .value-dot {
+            background: linear-gradient(135deg, #d97706, #2563eb);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+        }
+
+        .value-text strong {
+            display: block;
+            font-family: 'Manrope', sans-serif;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.95);
+            margin-bottom: 0.15rem;
+        }
+
+        .about-page .about-grid .value-text strong {
+            color: #0f172a;
+        }
+
+        .value-text span {
+            display: block;
+            color: rgba(255, 255, 255, 0.78);
+            line-height: 1.6;
+            font-family: 'Manrope', sans-serif;
+        }
+
+        .about-page .about-grid .value-text span {
+            color: #64748b;
+        }
+
+        .team-section-title {
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-bottom: 1.25rem;
+        }
+
+        .team-section-title p {
+            margin: 0;
+            color: rgba(255, 255, 255, 0.75);
+            font-family: 'Manrope', sans-serif;
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 1rem;
+        }
+
+        .team-card {
+            background: #ffffff;
+            border: 1px solid rgba(15, 23, 42, 0.10);
+            border-radius: 18px;
+            padding: 1.25rem;
+            transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+            min-height: 140px;
+            box-shadow: 0 12px 28px rgba(2, 8, 23, 0.10);
+            text-align: center;
+        }
+
+        .team-card:hover {
+            transform: translateY(-4px);
+            border-color: rgba(37, 99, 235, 0.28);
+            box-shadow: 0 18px 36px rgba(2, 8, 23, 0.14);
+        }
+
+        .avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 14px;
+            display: grid;
+            place-items: center;
+            font-family: 'Manrope', sans-serif;
+            font-weight: 800;
+            color: #0f172a;
+            background: linear-gradient(135deg, rgba(251, 191, 36, 0.95), rgba(59, 130, 246, 0.9));
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.22);
+            margin-bottom: 0.75rem;
+        }
+
+        .member-photo {
+            width: 100%;
+            aspect-ratio: 3 / 4;
+            object-fit: cover;
+            border-radius: 14px;
+            margin-bottom: 0.85rem;
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.24);
+        }
+
+        .member-name {
+            margin: 0 0 0.25rem;
+            font-family: 'Manrope', sans-serif;
+            font-weight: 800;
+            letter-spacing: 0.2px;
+            color: #0f172a;
+        }
+
+        .member-role {
+            margin: 0 0 0.45rem;
+            font-family: 'Manrope', sans-serif;
+            color: #be185d;
+            line-height: 1.5;
+            font-size: 0.76rem;
+            text-transform: uppercase;
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+
+        .member-role-desc {
+            margin: 0;
+            font-family: 'Manrope', sans-serif;
+            color: #475569;
+            line-height: 1.55;
+            font-size: 0.9rem;
+        }
+
+        .about-actions {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+            margin-top: 1.5rem;
+        }
+
+        .about-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.25rem;
+            border-radius: 10px;
+            text-decoration: none;
+            font-family: 'Manrope', sans-serif;
+            font-weight: 700;
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            background: rgba(255, 255, 255, 0.08);
+            color: rgba(255, 255, 255, 0.92);
+            transition: transform 0.2s ease, background 0.2s ease;
+        }
+
+        .about-btn:hover {
+            transform: translateY(-2px);
+            background: rgba(255, 255, 255, 0.12);
+        }
+
+        .about-btn.primary {
+            border-color: rgba(59, 130, 246, 0.45);
+            background: linear-gradient(135deg, rgba(59, 130, 246, 0.9), rgba(37, 99, 235, 0.9));
+            color: #ffffff;
+        }
+
+        @media (max-width: 1024px) {
+            .about-grid {
+                grid-template-columns: 1fr;
+            }
+            .team-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 560px) {
+            .about-container {
+                padding: 0 1rem;
+            }
+            .team-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+    <div class="about-page">
+        <div class="about-topbar">
+            <div class="about-topbar-inner">
+                <a class="about-logo-link" href="{{ path('app_landing') }}" aria-label="Back to landing page">
+                    <img src="{{ asset('img/logo1.png') }}" alt="Lux Events Logo">
+                    <span>Lux Events</span>
+                </a>
+            </div>
+        </div>
+
+        <section class="about-hero">
+            <div class="about-container">
+                <h1 class="about-title">About Lux Events</h1>
+                <p class="about-subtitle">
+                    Lux Events is your online home for professional event planning—from first idea to day-of coordination.
+                    We combine thoughtful design, trusted vendors, and clear communication so weddings, birthdays, and corporate gatherings feel calm, polished, and truly yours.
+                </p>
+
+                <div class="about-actions">
+                    <a class="about-btn primary" href="{{ path('app_landing') }}#contact">Plan an event</a>
+                    <a class="about-btn" href="{{ path('app_landing') }}#portfolio">See our work</a>
+                </div>
+            </div>
+        </section>
+
+        <section class="about-section">
+            <div class="about-container">
+                <div class="about-grid">
+                    <div class="about-card">
+                        <h2 class="about-h2">Our story</h2>
+                        <p class="about-p">
+                            Lux Events started with one promise: planning should feel supportive, not overwhelming. Whether you are dreaming up an intimate gathering or a full-scale celebration,
+                            we help you shape the vision, stay on budget, and enjoy the process—not just the finale.
+                        </p>
+                        <p class="about-p" style="margin-bottom: 0;">
+                            Through this website you can explore our portfolio, learn about services and packages, and reach our team directly.
+                            Logged-in clients can dig deeper into offerings aligned with how we work in real life—organized, responsive, and focused on your guests’ experience.
+                        </p>
+                    </div>
+
+                    <div class="about-card">
+                        <h2 class="about-h2">What we value</h2>
+                        <ul class="values-list">
+                            <li class="value-item">
+                                <span class="value-dot"></span>
+                                <div class="value-text">
+                                    <strong>Clarity</strong>
+                                    <span>Straightforward timelines, honest budgets, and updates you can count on—no guesswork before the big day.</span>
+                                </div>
+                            </li>
+                            <li class="value-item">
+                                <span class="value-dot"></span>
+                                <div class="value-text">
+                                    <strong>Creativity</strong>
+                                    <span>Custom themes, cohesive styling, and decor ideas that match your story—not a one-size template.</span>
+                                </div>
+                            </li>
+                            <li class="value-item">
+                                <span class="value-dot"></span>
+                                <div class="value-text">
+                                    <strong>Partnership</strong>
+                                    <span>We coordinate venues, suppliers, and day-of details so you stay present while we handle the moving parts.</span>
+                                </div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="about-section" id="team">
+            <div class="about-container">
+                <div class="team-section-title">
+                    <h2 class="about-h2" style="margin: 0;">Meet the Team</h2>
+                    <p>Core creators behind your event website</p>
+                </div>
+
+                <div class="team-grid">
+                    <div class="team-card">
+                        <img class="member-photo" src="{{ asset('img/ichigo.jpg') }}" alt="Ichigo - Full Stack Developer">
+                        <h3 class="member-name">Ichigo</h3>
+                        <p class="member-role">Lead Event Systems Developer</p>
+                        <p class="member-role-desc">Builds the website booking process, admin dashboard tools, and secure backend features that keep planning smooth.</p>
+                    </div>
+                    <div class="team-card">
+                        <img class="member-photo" src="{{ asset('img/luffy.jpg') }}" alt="Luffy - Product and Content Strategist">
+                        <h3 class="member-name">Luffy</h3>
+                        <p class="member-role">Client Journey and Content Strategist</p>
+                        <p class="member-role-desc">Designs service messaging, page flow, and call-to-actions so visitors understand offerings and send event inquiries fast.</p>
+                    </div>
+                    <div class="team-card">
+                        <img class="member-photo" src="{{ asset('img/naruto.jpg') }}" alt="Naruto - UI UX Designer">
+                        <h3 class="member-name">Naruto</h3>
+                        <p class="member-role">UI UX and Brand Experience Designer</p>
+                        <p class="member-role-desc">Creates the premium visual style, responsive layouts, and polished event-themed interface used across the website.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+{% endblock %}
+

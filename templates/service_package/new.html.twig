@@ -1,0 +1,27 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Service Package - Lux Events{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('styles/admin.css') }}">
+{% endblock %}
+
+{% block body %}
+<div class="admin-container">
+    {% include 'admin/_sidebar.html.twig' %}
+    <main class="main-content">
+        {% include 'admin/_header.html.twig' with {title: 'New Service Package'} %}
+
+        <div class="form-card">
+            <div class="form-header">
+                <h3>Create Service Package</h3>
+                <a href="{{ path('app_service_package_index') }}" class="view-all-link">← Back to list</a>
+            </div>
+            <div class="form-content">
+                {% include 'service_package/_form.html.twig' with {submit_label: 'Save Package'} %}
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

@@ -1,0 +1,65 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Venue - Lux Events{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('styles/admin.css') }}">
+{% endblock %}
+
+{% block body %}
+<div class="admin-container">
+    {% include 'admin/_sidebar.html.twig' %}
+    <main class="main-content">
+        {% include 'admin/_header.html.twig' with {title: 'New Venue'} %}
+
+        <div class="form-card">
+            <div class="form-header">
+                <h3>Create Venue</h3>
+                <a href="{{ path('app_venue_index') }}" class="view-all-link">← Back to list</a>
+            </div>
+            <div class="form-content">
+                {{ form_start(form, {'attr': {'class': 'theme-form'}}) }}
+                    <div class="form-grid">
+                        {{ form_row(form.name, {
+                            row_attr: {class: 'form-row'},
+                            attr: {class: 'form-input', placeholder: 'e.g. Grand Ballroom'}
+                        }) }}
+                        {{ form_row(form.address, {
+                            row_attr: {class: 'form-row'},
+                            attr: {class: 'form-textarea', placeholder: 'Full address of the venue'}
+                        }) }}
+                        {{ form_row(form.capacity, {
+                            row_attr: {class: 'form-row'},
+                            attr: {class: 'form-input', placeholder: 'Maximum capacity'}
+                        }) }}
+                        {{ form_row(form.contactInfo, {
+                            row_attr: {class: 'form-row'},
+                            attr: {class: 'form-input', placeholder: 'Phone, email, etc.'}
+                        }) }}
+                    </div>
+                    <div class="form-actions">
+                        <button class="btn-primary" type="submit">Save Venue</button>
+                        <a href="{{ path('app_venue_index') }}" class="btn-secondary">Cancel</a>
+                    </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -4,26 +4,92 @@ security:
         Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface: 'auto'
     # https://symfony.com/doc/current/security.html#loading-the-user-the-user-provider
     providers:
-        users_in_memory: { memory: null }
+        # Email or username (web form + mobile API)
+        app_user_provider:
+            id: App\Security\IdentifierUserProvider
+    # Role hierarchy - ROLE_ADMIN includes ROLE_STAFF permissions
+    role_hierarchy:
+        ROLE_ADMIN: [ROLE_STAFF, ROLE_USER]
+        ROLE_STAFF: [ROLE_USER]
     firewalls:
         dev:
             pattern: ^/(_(profiler|wdt)|css|images|js)/
             security: false
+
+        api_platform:
+            pattern: ^/api
+            stateless: true
+            provider: app_user_provider
+            user_checker: App\Security\UserChecker
+            json_login:
+                check_path: /api/login
+                username_path: username
+                password_path: password
+                success_handler: App\Security\JWTAuthenticationSuccessHandler
+                failure_handler: lexik_jwt_authentication.handler.authentication_failure
+            jwt: ~
+
         main:
-            lazy: true
-            provider: users_in_memory
-
-            # activate different ways to authenticate
-            # https://symfony.com/doc/current/security.html#the-firewall
-
-            # https://symfony.com/doc/current/security/impersonating_user.html
-            # switch_user: true
+            provider: app_user_provider
+            custom_authenticators:
+                - App\Security\LoginFormAuthenticator
+                - App\Security\GoogleAuthenticator
+            entry_point: App\Security\LoginFormAuthenticator
+            access_denied_handler: App\Security\AccessDeniedHandler
+            user_checker: App\Security\UserChecker
+            logout:
+                path: app_logout
+                # Relative path keeps the browser on the same host:port (e.g. localhost:8000 in Docker).
+                target: /
 
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-        # - { path: ^/admin, roles: ROLE_ADMIN }
-        # - { path: ^/profile, roles: ROLE_USER }
+        - { path: ^/login, roles: PUBLIC_ACCESS }
+        - { path: ^/connect/google, roles: PUBLIC_ACCESS }
+        - { path: ^/register, roles: PUBLIC_ACCESS }
+        - { path: ^/verify-email, roles: PUBLIC_ACCESS }
+        - { path: ^/resend-verification, roles: PUBLIC_ACCESS }
+        - { path: ^/about, roles: PUBLIC_ACCESS }
+        - { path: ^/portfolio, roles: PUBLIC_ACCESS }
+        # Landing page - publicly accessible
+        - { path: ^/$, roles: PUBLIC_ACCESS }
+        # API auth endpoints
+        - { path: ^/api/login, roles: PUBLIC_ACCESS }
+        - { path: ^/api/register, roles: PUBLIC_ACCESS }
+        - { path: ^/api/verify-email, roles: PUBLIC_ACCESS }
+        - { path: ^/api/resend-verification, roles: PUBLIC_ACCESS }
+        - { path: ^/api/google, roles: PUBLIC_ACCESS }
+        - { path: ^/api/google/mobile, roles: PUBLIC_ACCESS }
+        # Customer Mobile API (JWT + ROLE_USER)
+        - { path: ^/api/customer, roles: ROLE_USER }
+        # Staff/admin API Platform resources (JWT)
+        - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
+        # Service package catalog (photos) — public; booking requires login
+        - { path: ^/services$, roles: PUBLIC_ACCESS }
+        - { path: ^/services/\d+/book, roles: ROLE_USER }
+        # Admin-only routes - must have ROLE_ADMIN (staff cannot access)
+        - { path: ^/admin/?$, roles: ROLE_ADMIN }
+        - { path: ^/admin/dashboard, roles: ROLE_ADMIN }
+        - { path: ^/admin/users, roles: ROLE_ADMIN }
+        - { path: ^/admin/activity-logs, roles: ROLE_ADMIN }
+        - { path: ^/admin/analytics, roles: ROLE_ADMIN }
+        - { path: ^/admin/events, roles: ROLE_ADMIN }
+        - { path: ^/admin/records, roles: ROLE_ADMIN }
+        - { path: ^/admin/staff-dashboard, roles: ROLE_STAFF }
+        - { path: ^/admin/pending-requests, roles: ROLE_STAFF }
+        - { path: ^/admin/event-request, roles: ROLE_STAFF }
+        # Admin routes (profile, change password) - admin and staff can access
+        - { path: ^/admin/profile, roles: ROLE_STAFF }
+        - { path: ^/admin/change-password, roles: ROLE_STAFF }
+        # Event management - admin and staff can access (with restrictions in controllers)
+        - { path: ^/event, roles: ROLE_STAFF }
+        # Theme, Venue, ServicePackage management - admin and staff can access
+        - { path: ^/admin/themes, roles: ROLE_STAFF }
+        - { path: ^/admin/venues, roles: ROLE_STAFF }
+        - { path: ^/admin/service-packages, roles: ROLE_STAFF }
+        # Default - authenticated users
+        - { path: ^/, roles: ROLE_USER }
 
 when@test:
     security:

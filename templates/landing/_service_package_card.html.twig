@@ -1,0 +1,35 @@
+{# Customer-facing service package card with photo when available. #}
+{% set href = book_href|default(path('app_service_book', { id: package.id })) %}
+{% set variant = card_variant|default('landing') %}
+
+<a href="{{ href }}" class="service-card-link {{ variant == 'landing' ? 'fade-in' : '' }}" title="{{ package.name }}">
+    <div class="service-package-card {{ package.imagePath ? 'service-package-card--has-photo' : '' }} service-package-card--{{ variant }}">
+        <div class="service-package-card__media">
+            {% if package.imagePath %}
+                <img
+                    src="{{ asset(package.imagePath) }}"
+                    alt="Photo for {{ package.name }}"
+                    loading="lazy"
+                    decoding="async"
+                >
+            {% else %}
+                <div class="service-package-card__placeholder" aria-hidden="true">
+                    <i class="bi bi-image"></i>
+                    <span>Photo coming soon</span>
+                </div>
+            {% endif %}
+        </div>
+        <div class="service-package-card__body">
+            <h3 class="service-package-card__title">{{ package.name }}</h3>
+            <p class="service-package-card__desc">
+                {{ package.description ?: 'Professional event planning service tailored to your needs.' }}
+            </p>
+            {% if package.price is not null %}
+                <p class="service-package-card__price">
+                    ₱{{ package.price|number_format(2, '.', ',') }}
+                    <span class="service-package-card__price-label">Starting price</span>
+                </p>
+            {% endif %}
+        </div>
+    </div>
+</a>

@@ -1,0 +1,35 @@
+{{ form_start(form, {'attr': {'class': 'theme-form', 'enctype': 'multipart/form-data'}}) }}
+    <div class="form-grid">
+        {{ form_row(form.name, {
+            row_attr: {class: 'form-row'},
+            attr: {class: 'form-input', placeholder: 'e.g. Premium Package'}
+        }) }}
+        {{ form_row(form.description, {
+            row_attr: {class: 'form-row'},
+            attr: {class: 'form-textarea', placeholder: 'Package description and inclusions'}
+        }) }}
+        {{ form_row(form.price, {
+            row_attr: {class: 'form-row'},
+            attr: {class: 'form-input', placeholder: '0.00'}
+        }) }}
+        <div class="form-row form-row-full">
+            {% if service_package.imagePath is defined and service_package.imagePath %}
+                <div class="package-image-preview">
+                    <p class="form-label">Current photo</p>
+                    <img src="{{ asset(service_package.imagePath) }}" alt="{{ service_package.name }} preview">
+                </div>
+            {% endif %}
+            {{ form_row(form.imageFile, {
+                row_attr: {class: 'form-row'},
+                attr: {class: 'form-input', accept: 'image/jpeg,image/png,image/webp,image/gif'}
+            }) }}
+            {% if form.removeImage is defined %}
+                {{ form_row(form.removeImage, {row_attr: {class: 'form-row'}}) }}
+            {% endif %}
+        </div>
+    </div>
+    <div class="form-actions">
+        <button class="btn-primary" type="submit">{{ submit_label|default('Save Package') }}</button>
+        <a href="{{ path('app_service_package_index') }}" class="btn-secondary">Cancel</a>
+    </div>
+{{ form_end(form) }}

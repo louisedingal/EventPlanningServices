@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Theme - Lux Events{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('styles/admin.css') }}">
+{% endblock %}
+
+{% block body %}
+<div class="admin-container">
+    {% include 'admin/_sidebar.html.twig' %}
+    <main class="main-content">
+        {% include 'admin/_header.html.twig' with {title: 'New Theme'} %}
+
+        <div class="form-card">
+            <div class="form-header">
+                <h3>Create Theme</h3>
+                <a href="{{ path('app_theme_index') }}" class="view-all-link">← Back to list</a>
+            </div>
+            <div class="form-content">
+                {% if chosenType is defined %}
+                    <div class="help-text" style="margin-bottom: 0.75rem;">Event Type: <strong>{{ chosenType }}</strong></div>
+                {% endif %}
+                {% include 'theme/_form.html.twig' with {
+                    form: form,
+                    theme: theme,
+                    submit_label: 'Save Theme',
+                } %}
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

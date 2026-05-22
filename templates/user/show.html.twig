@@ -1,0 +1,129 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}User Details - Lux Events{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('styles/admin.css') }}">
+{% endblock %}
+
+{% block body %}
+<div class="admin-container">
+    {% include 'admin/_sidebar.html.twig' %}
+    <main class="main-content">
+        {% include 'admin/_header.html.twig' with {title: 'User Details'} %}
+
+        <div class="profile-container">
+            <div class="profile-card">
+                <div class="profile-header">
+                    <div class="profile-avatar">
+                        <span class="avatar-initial">{{ (user.name ?: user.email)|first|upper }}</span>
+                    </div>
+                    <div class="profile-info">
+                        <h2>{{ (user.name ?: '') ~ ' ' ~ (user.lastName ?: '') ?: 'No Name' }}</h2>
+                        <p class="profile-email">{{ user.email }}</p>
+                        <p class="profile-role">
+                            {% set primaryRole = 'ROLE_USER' %}
+                            {% if 'ROLE_ADMIN' in user.roles %}
+                                {% set primaryRole = 'ROLE_ADMIN' %}
+                            {% elseif 'ROLE_STAFF' in user.roles %}
+                                {% set primaryRole = 'ROLE_STAFF' %}
+                            {% endif %}
+                            <span class="role-badge" style="padding: 0.5rem 1rem; border-radius: 6px; font-size: 0.875rem;
+                                {% if primaryRole == 'ROLE_ADMIN' %}background: #fef3c7; color: #92400e;
+                                {% elseif primaryRole == 'ROLE_STAFF' %}background: #dbeafe; color: #1e40af;
+                                {% else %}background: #e5e7eb; color: #374151;{% endif %}">
+                                {{ primaryRole|replace({'ROLE_': ''}) }}
+                            </span>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="profile-details">
+                    <div class="detail-row">
+                        <span class="detail-label">User ID:</span>
+                        <span class="detail-value">#{{ user.id }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Email:</span>
+                        <span class="detail-value">{{ user.email }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">First Name:</span>
+                        <span class="detail-value">{{ user.name ?: 'Not set' }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Last Name:</span>
+                        <span class="detail-value">{{ user.lastName ?: 'Not set' }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Status:</span>
+                        <span class="detail-value">
+                            <span style="padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.875rem;
+                                {% if user.status == 'active' %}background: #d1fae5; color: #065f46;
+                                {% elseif user.status == 'disabled' %}background: #fee2e2; color: #991b1b;
+                                {% else %}background: #e5e7eb; color: #374151;{% endif %}">
+                                {{ user.status|capitalize }}
+                            </span>
+                        </span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">Date Created:</span>
+                        <span class="detail-value">{{ user.createdAt ? user.createdAt|date('F d, Y g:i A') : 'N/A' }}</span>
+                    </div>
+                    <div class="detail-row">
+                        <span class="detail-label">All Roles:</span>
+                        <span class="detail-value">
+                            {% for role in user.roles %}
+                                <span style="padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.75rem; margin-right: 0.5rem; background: #e5e7eb; color: #374151;">
+                                    {{ role }}
+                                </span>
+                            {% endfor %}
+                        </span>
+                    </div>
+                </div>
+
+                <div class="profile-actions" style="margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #e5e7eb;">
+                    <a href="{{ path('app_user_edit', {'id': user.id}) }}" class="btn-primary">Edit User</a>
+                    {% if user.status == 'active' %}
+                        <form method="post" action="{{ path('app_user_toggle_status', {'id': user.id}) }}" style="display: inline;" onsubmit="return confirm('Are you sure you want to disable this user?');">
+                            <input type="hidden" name="_token" value="{{ csrf_token('toggle-status' ~ user.id) }}">
+                            <input type="hidden" name="status" value="disabled">
+                            <button type="submit" class="btn-secondary" style="background: #f59e0b;">Disable User</button>
+                        </form>
+                    {% elseif user.status == 'disabled' %}
+                        <form method="post" action="{{ path('app_user_toggle_status', {'id': user.id}) }}" style="display: inline;">
+                            <input type="hidden" name="_token" value="{{ csrf_token('toggle-status' ~ user.id) }}">
+                            <input type="hidden" name="status" value="active">
+                            <button type="submit" class="btn-secondary" style="background: #10b981;">Enable User</button>
+                        </form>
+                    {% endif %}
+                    {% if user.status != 'archived' %}
+                        <form method="post" action="{{ path('app_user_toggle_status', {'id': user.id}) }}" style="display: inline;" onsubmit="return confirm('Are you sure you want to archive this user?');">
+                            <input type="hidden" name="_token" value="{{ csrf_token('toggle-status' ~ user.id) }}">
+                            <input type="hidden" name="status" value="archived">
+                            <button type="submit" class="btn-secondary" style="background: #6b7280;">Archive User</button>
+                        </form>
+                    {% endif %}
+                    <form method="post" action="{{ path('app_user_delete', {'id': user.id}) }}" style="display: inline;" onsubmit="return confirm('⚠️ Are you sure you want to delete this user account?\n\nUser: {{ user.email }}\n\nThis action cannot be undone!');">
+                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ user.id) }}">
+                        <button type="submit" class="btn-secondary" style="background: #ef4444;">Delete User</button>
+                    </form>
+                    <a href="{{ path('app_user_index') }}" class="btn-secondary">Back to Users</a>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+

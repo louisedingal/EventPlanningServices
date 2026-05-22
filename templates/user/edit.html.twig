@@ -1,0 +1,437 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit User - Lux Events{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('styles/admin.css') }}">
+    <style>
+        .edit-user-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+        .user-header-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            color: white;
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .user-header-content {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .user-avatar-large {
+            width: 80px;
+            height: 80px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 700;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        .user-header-info h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin: 0 0 0.5rem 0;
+            color: white;
+        }
+
+        .user-header-info p {
+            margin: 0.25rem 0;
+            opacity: 0.9;
+            font-size: 0.95rem;
+        }
+
+        .user-id-badge {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.25rem 0.75rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            margin-top: 0.5rem;
+        }
+
+        .form-sections {
+            display: grid;
+            gap: 1.5rem;
+        }
+
+        .form-section {
+            background: white;
+            border-radius: 12px;
+            padding: 1.75rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e2e8f0;
+        }
+
+        .form-section-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid #f1f5f9;
+        }
+
+        .form-section-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .form-section-title {
+            font-size: 1.125rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin: 0;
+        }
+
+        .form-section-description {
+            font-size: 0.875rem;
+            color: #64748b;
+            margin: 0.25rem 0 0 0;
+        }
+
+        .form-group-enhanced {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group-enhanced:last-child {
+            margin-bottom: 0;
+        }
+
+        .form-group-enhanced label {
+            display: block;
+            font-weight: 600;
+            color: #334155;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .form-group-enhanced input,
+        .form-group-enhanced select {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+            background: white;
+        }
+
+        .form-group-enhanced input:focus,
+        .form-group-enhanced select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .form-help-text {
+            margin-top: 0.5rem;
+            font-size: 0.8125rem;
+            color: #64748b;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .form-help-text::before {
+            content: "";
+        }
+        
+        .form-help-text i {
+            font-size: 0.875rem;
+            color: #64748b;
+        }
+
+        .form-actions-enhanced {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            padding-top: 2rem;
+            border-top: 2px solid #f1f5f9;
+            flex-wrap: wrap;
+        }
+
+        .btn-update {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 0.875rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-update:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-cancel {
+            background: #f1f5f9;
+            color: #475569;
+            border: 2px solid #e2e8f0;
+            padding: 0.875rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.2s ease;
+        }
+
+        .btn-cancel:hover {
+            background: #e2e8f0;
+            border-color: #cbd5e1;
+        }
+
+        .btn-reset-password {
+            background: #fbbf24;
+            color: #1e293b;
+            border: none;
+            padding: 0.875rem 2rem;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 8px rgba(251, 191, 36, 0.3);
+        }
+
+        .btn-reset-password:hover {
+            background: #f59e0b;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(251, 191, 36, 0.4);
+        }
+
+        .alert-enhanced {
+            padding: 1rem 1.25rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 500;
+            border-left: 4px solid;
+        }
+
+        .alert-error-enhanced {
+            background: #fef2f2;
+            color: #991b1b;
+            border-left-color: #ef4444;
+        }
+
+        .alert-error-enhanced::before {
+            content: "";
+        }
+        
+        .alert-error-enhanced i {
+            font-size: 1.25rem;
+        }
+
+        .role-status-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .role-status-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .user-header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .form-actions-enhanced {
+                flex-direction: column;
+            }
+
+            .form-actions-enhanced button,
+            .form-actions-enhanced a {
+                width: 100%;
+                text-align: center;
+            }
+        }
+
+        .form-errors {
+            color: #ef4444;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            display: block;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="admin-container">
+    {% include 'admin/_sidebar.html.twig' %}
+    <main class="main-content">
+        {% include 'admin/_header.html.twig' with {title: 'Edit User'} %}
+
+        <div class="edit-user-container">
+            <!-- User Header Card -->
+            <div class="user-header-card">
+                <div class="user-header-content">
+                    <div class="user-avatar-large">
+                        {{ (user.name ?: user.email)|first|upper }}
+                    </div>
+                    <div class="user-header-info">
+                        <h2>{{ (user.name ?: '') ~ ' ' ~ (user.lastName ?: '') ?: 'User Account' }}</h2>
+                        <p><i class="bi bi-envelope"></i> {{ user.email }}</p>
+                        <span class="user-id-badge">ID: #{{ user.id }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Flash Messages -->
+            {% for flash_error in app.flashes('error') %}
+                <div class="alert-enhanced alert-error-enhanced">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    {{ flash_error }}
+                </div>
+            {% endfor %}
+
+            {% for flash_success in app.flashes('success') %}
+                <div class="alert-enhanced" style="background: #f0fdf4; color: #166534; border-left-color: #10b981;">
+                    <i class="bi bi-check-circle"></i>
+                    {{ flash_success }}
+                </div>
+            {% endfor %}
+
+            {{ form_start(form, {'attr': {'class': 'form'}}) }}
+                <!-- Personal Information Section -->
+                <div class="form-section">
+                    <div class="form-section-header">
+                        <div class="form-section-icon"><i class="bi bi-person"></i></div>
+                        <div>
+                            <h3 class="form-section-title">Personal Information</h3>
+                            <p class="form-section-description">Update the user's name and email address</p>
+                        </div>
+                    </div>
+
+                    <div class="form-group-enhanced">
+                        {{ form_label(form.name) }}
+                        {{ form_widget(form.name, {'attr': {'class': 'form-control'}}) }}
+                        {{ form_errors(form.name) }}
+                    </div>
+
+                    <div class="form-group-enhanced">
+                        {{ form_label(form.lastName) }}
+                        {{ form_widget(form.lastName, {'attr': {'class': 'form-control'}}) }}
+                        {{ form_errors(form.lastName) }}
+                    </div>
+
+                    <div class="form-group-enhanced">
+                        {{ form_label(form.email) }}
+                        {{ form_widget(form.email, {'attr': {'class': 'form-control'}}) }}
+                        {{ form_errors(form.email) }}
+                    </div>
+                </div>
+
+                <!-- Account Settings Section -->
+                <div class="form-section">
+                    <div class="form-section-header">
+                        <div class="form-section-icon"><i class="bi bi-gear"></i></div>
+                        <div>
+                            <h3 class="form-section-title">Account Settings</h3>
+                            <p class="form-section-description">Manage user role and account status</p>
+                        </div>
+                    </div>
+
+                    <div class="role-status-grid">
+                        <div class="form-group-enhanced">
+                            {{ form_label(form.roles) }}
+                            {{ form_widget(form.roles, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.roles) }}
+                            <div class="form-help-text">
+                                <i class="bi bi-info-circle"></i>
+                                Select the user's access level and permissions
+                            </div>
+                        </div>
+
+                        <div class="form-group-enhanced">
+                            {{ form_label(form.status) }}
+                            {{ form_widget(form.status, {'attr': {'class': 'form-control'}}) }}
+                            {{ form_errors(form.status) }}
+                            <div class="form-help-text">
+                                <i class="bi bi-info-circle"></i>
+                                Control account accessibility
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Password Section -->
+                {% if form.plainPassword is defined %}
+                <div class="form-section">
+                    <div class="form-section-header">
+                        <div class="form-section-icon"><i class="bi bi-lock"></i></div>
+                        <div>
+                            <h3 class="form-section-title">Password Reset</h3>
+                            <p class="form-section-description">Change the user's password</p>
+                        </div>
+                    </div>
+
+                    <div class="form-group-enhanced">
+                        {{ form_label(form.plainPassword) }}
+                        {{ form_widget(form.plainPassword, {'attr': {'class': 'form-control'}}) }}
+                        {{ form_errors(form.plainPassword) }}
+                        <div class="form-help-text">
+                            <i class="bi bi-info-circle"></i>
+                            Leave blank to keep current password. Enter new password to reset it.
+                        </div>
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Form Actions -->
+                <div class="form-actions-enhanced">
+                    <button type="submit" class="btn-update">
+                        <i class="bi bi-save"></i> Update User Account
+                    </button>
+                    <a href="{{ path('app_user_show', {'id': user.id}) }}" class="btn-cancel">
+                        <i class="bi bi-arrow-left"></i> Cancel
+                    </a>
+                    {% if form.plainPassword is not defined %}
+                    <a href="{{ path('app_user_edit', {'id': user.id, 'reset_password': '1'}) }}" class="btn-reset-password">
+                        <i class="bi bi-key"></i> Reset Password
+                    </a>
+                    {% endif %}
+                </div>
+            {{ form_end(form) }}
+        </div>
+    </main>
+</div>
+{% endblock %}
+
+
+
+
