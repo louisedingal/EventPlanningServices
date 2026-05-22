@@ -4,15 +4,15 @@ namespace App\DataFixtures;
 
 use App\Entity\Theme;
 use App\Entity\User;
-use Doctrine\Common\DataFixtures\AbstractFixture;
+use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Persistence\ObjectManager;
 
 /**
- * Fixture data exported from local `theme` table on 2026-05-22 04:30:37.
+ * Fixture data exported from local `theme` table on 2026-05-22 05:27:16.
  * Regenerate: php scripts/generate-fixtures-from-db.php
  */
-class ThemeFixtures extends AbstractFixture implements DependentFixtureInterface
+class ThemeFixtures extends Fixture implements DependentFixtureInterface
 {
     public function load(ObjectManager $manager): void
     {

@@ -7,6 +7,8 @@ parameters:
     service_package_images_dir: '%kernel.project_dir%/public/uploads/service-packages'
     theme_sample_images_dir: '%kernel.project_dir%/public/uploads/theme-samples'
     env(APP_URL): ''
+    env(CONTACT_FORM_EMBED_URL): ''
+    env(CONTACT_INBOX_EMAIL): ''
     default_mailer_dsn: 'null://null'
 
 services:

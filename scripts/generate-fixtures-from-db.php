@@ -99,10 +99,8 @@ function buildFixtureFile(string $class, string $entity, string $table, array $r
     $deps = dependenciesFor($table);
     $implements = $deps !== [] ? ' implements DependentFixtureInterface' : '';
     $useDeps = $deps !== [] ? "\nuse Doctrine\Common\DataFixtures\DependentFixtureInterface;" : '';
-    $useAbstract = usesAbstractFixture($table)
-        ? "\nuse Doctrine\Common\DataFixtures\AbstractFixture;"
-        : "\nuse Doctrine\Bundle\FixturesBundle\Fixture;";
-    $extends = usesAbstractFixture($table) ? 'AbstractFixture' : 'Fixture';
+    $useAbstract = "\nuse Doctrine\Bundle\FixturesBundle\Fixture;";
+    $extends = 'Fixture';
 
     $loadBody = generateLoadBody($table, $rows);
     $depsMethod = $deps !== []
@@ -246,7 +244,7 @@ function setterLines(string $table, array $row, string $varName): array
             continue;
         }
 
-        if (isFkColumn($column)) {
+        if (isFkColumn($table, $column)) {
             if ($value === null || $value === '') {
                 continue;
             }
@@ -343,8 +341,13 @@ function setterFor(string $table, string $column): ?string
     return $map[$table][$column] ?? null;
 }
 
-function isFkColumn(string $column): bool
+function isFkColumn(string $table, string $column): bool
 {
+    // activity_log.entity_id is a plain int (affected entity pk), not a Doctrine relation
+    if ($table === 'activity_log' && $column === 'entity_id') {
+        return false;
+    }
+
     return str_ends_with($column, '_id');
 }
 
