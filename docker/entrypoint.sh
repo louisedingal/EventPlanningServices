@@ -5,6 +5,9 @@ cd /app
 
 PORT="${PORT:-8000}"
 export PORT
+REALTIME_WS_ENABLED="${REALTIME_WS_ENABLED:-1}"
+REALTIME_WS_PORT="${REALTIME_WS_PORT:-8081}"
+REALTIME_WS_INTERVAL="${REALTIME_WS_INTERVAL:-2}"
 
 # Railway injects RAILWAY_PUBLIC_DOMAIN; build APP_URL if missing.
 if [ -z "${APP_URL:-}" ] && [ -n "${RAILWAY_PUBLIC_DOMAIN:-}" ]; then
@@ -99,9 +102,22 @@ grep -E '^\s*listen' "$NGINX_SITE" 2>/dev/null || true
 # Start nginx in background
 nginx -g 'daemon off;' &
 NGINX_PID=$!
+REALTIME_PID=""
+
+if [ "$REALTIME_WS_ENABLED" = "1" ] && [ -f vendor/autoload_runtime.php ]; then
+    echo "Starting realtime websocket worker on 127.0.0.1:${REALTIME_WS_PORT}"
+    php bin/console app:realtime:websocket-server \
+        --host=127.0.0.1 \
+        --port="${REALTIME_WS_PORT}" \
+        --interval="${REALTIME_WS_INTERVAL}" &
+    REALTIME_PID=$!
+fi
 
 cleanup() {
     kill "$NGINX_PID" 2>/dev/null || true
+    if [ -n "$REALTIME_PID" ]; then
+        kill "$REALTIME_PID" 2>/dev/null || true
+    fi
     killall php-fpm 2>/dev/null || true
 }
 trap cleanup INT TERM

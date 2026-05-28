@@ -57,7 +57,12 @@
             </script>
         {% endblock %}
     </head>
-    <body>
+    <body
+        {% if app.user %}
+            data-realtime-token-endpoint="{{ path('app_realtime_token') }}"
+            data-realtime-ws-base="{{ (app.request.isSecure ? 'wss' : 'ws') ~ '://' ~ app.request.host ~ '/ws/notifications' }}"
+        {% endif %}
+    >
         {% block body %}{% endblock %}
     </body>
 </html>

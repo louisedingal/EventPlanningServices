@@ -122,6 +122,145 @@ document.addEventListener('DOMContentLoaded', initNumericOnlyOnPage);
 document.addEventListener('turbo:load', initNumericOnlyOnPage);
 document.addEventListener('turbo:render', initNumericOnlyOnPage);
 
+let realtimeSocket = null;
+let realtimeReconnectTimer = null;
+
+function getRealtimeWebSocketBaseUrl() {
+    const { protocol, host } = window.location;
+    const wsProtocol = protocol === 'https:' ? 'wss:' : 'ws:';
+    const configuredBase = document.body?.dataset?.realtimeWsBase || '';
+
+    if (configuredBase) {
+        return configuredBase;
+    }
+
+    const hostParts = host.split(':');
+    const hostname = hostParts[0];
+
+    return `${wsProtocol}//${hostname}:8081`;
+}
+
+function showRealtimeToast(message) {
+    const existing = document.getElementById('realtime-toast');
+    if (existing) {
+        existing.remove();
+    }
+
+    const toast = document.createElement('div');
+    toast.id = 'realtime-toast';
+    toast.textContent = message;
+    toast.style.cssText = [
+        'position:fixed',
+        'right:16px',
+        'bottom:16px',
+        'z-index:99999',
+        'background:#0f172a',
+        'color:#ffffff',
+        'padding:10px 14px',
+        'border-radius:10px',
+        'box-shadow:0 8px 20px rgba(0,0,0,0.25)',
+        'font-size:13px',
+        'font-weight:600',
+    ].join(';');
+
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 2500);
+}
+
+async function connectRealtimeWebSocket() {
+    const tokenEndpoint = document.body?.dataset?.realtimeTokenEndpoint || '';
+    if (!tokenEndpoint) {
+        return;
+    }
+    if (realtimeSocket && (realtimeSocket.readyState === WebSocket.OPEN || realtimeSocket.readyState === WebSocket.CONNECTING)) {
+        return;
+    }
+
+    try {
+        const tokenRes = await fetch(tokenEndpoint, {
+            credentials: 'same-origin',
+            headers: { Accept: 'application/json' },
+        });
+        if (!tokenRes.ok) {
+            return;
+        }
+
+        const { token } = await tokenRes.json();
+        if (!token) {
+            return;
+        }
+
+        const wsBaseUrl = getRealtimeWebSocketBaseUrl();
+        realtimeSocket = new WebSocket(`${wsBaseUrl}/?token=${encodeURIComponent(token)}`);
+
+        realtimeSocket.onmessage = (event) => {
+            let payload = null;
+            try {
+                payload = JSON.parse(event.data);
+            } catch (e) {
+                return;
+            }
+
+            if (!payload || !payload.type) {
+                return;
+            }
+
+            const path = window.location.pathname;
+            const isPendingPage = path.startsWith('/admin/pending-requests');
+            const isAdminDataPage =
+                path.startsWith('/admin/events')
+                || path.startsWith('/admin/records')
+                || path === '/admin/'
+                || path === '/admin'
+                || path.startsWith('/admin/staff-dashboard')
+                || path.startsWith('/admin/analytics');
+            const isPublicCatalogPage =
+                path.startsWith('/services')
+                || path.startsWith('/portfolio')
+                || path.startsWith('/themes')
+                || path.startsWith('/venue')
+                || path === '/';
+
+            if (payload.type === 'admin.pending_requests.updated' && isPendingPage) {
+                showRealtimeToast('Pending requests updated. Refreshing...');
+                setTimeout(() => window.location.reload(), 350);
+                return;
+            }
+
+            if (payload.type === 'admin.catalog.updated' && isAdminDataPage) {
+                showRealtimeToast('Admin data changed. Refreshing...');
+                setTimeout(() => window.location.reload(), 350);
+                return;
+            }
+
+            if (payload.type === 'customer.catalog.updated' && isPublicCatalogPage) {
+                showRealtimeToast('Catalog updated. Refreshing...');
+                setTimeout(() => window.location.reload(), 350);
+            }
+        };
+
+        realtimeSocket.onclose = () => {
+            realtimeSocket = null;
+            if (realtimeReconnectTimer) {
+                clearTimeout(realtimeReconnectTimer);
+            }
+            realtimeReconnectTimer = setTimeout(connectRealtimeWebSocket, 3000);
+        };
+    } catch (e) {
+        if (realtimeReconnectTimer) {
+            clearTimeout(realtimeReconnectTimer);
+        }
+        realtimeReconnectTimer = setTimeout(connectRealtimeWebSocket, 4000);
+    }
+}
+
+function initRealtimeWebSocket() {
+    connectRealtimeWebSocket();
+}
+
+document.addEventListener('DOMContentLoaded', initRealtimeWebSocket);
+document.addEventListener('turbo:load', initRealtimeWebSocket);
+
 // Hover-triggered random image rotator for Services
 document.addEventListener('DOMContentLoaded', () => {
     const stack = document.querySelector('.rotator-stack');
