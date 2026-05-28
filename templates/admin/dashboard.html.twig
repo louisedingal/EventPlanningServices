@@ -90,6 +90,14 @@
                 </div>
                 <div class="kpi-value">₱{{ totalRevenue|number_format(0, '.', ',') }}</div>
             </div>
+
+            <a href="{{ path('app_admin_records', {type: 'payments'}) }}" class="kpi-card" style="text-decoration: none; cursor: pointer; transition: all 0.2s ease;">
+                <div class="kpi-header">
+                    <i class="bi bi-receipt kpi-icon"></i>
+                    <span class="kpi-label">APPROVED PAYMENTS</span>
+                </div>
+                <div class="kpi-value">₱{{ paymentRevenue|number_format(0, '.', ',') }}</div>
+            </a>
             
             <div class="kpi-card">
                 <div class="kpi-header">
@@ -97,6 +105,43 @@
                     <span class="kpi-label">AVG EVENT PRICE</span>
                 </div>
                 <div class="kpi-value">₱{{ averageEventPrice|number_format(0, '.', ',') }}</div>
+            </div>
+        </div>
+
+        <div class="table-card" style="margin-top: 2rem;">
+            <div class="table-header">
+                <h3>Latest Payment Receipts</h3>
+                <a href="{{ path('app_admin_records', {type: 'payments'}) }}" class="view-all-link">View All →</a>
+            </div>
+            <div class="table-content">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>Receipt No.</th>
+                            <th>Customer</th>
+                            <th>Event</th>
+                            <th>Amount</th>
+                            <th>Approved At</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for paid in paidRequests|slice(0, 10) %}
+                            <tr>
+                                <td><strong>{{ paid.receiptNumber ?: '-' }}</strong></td>
+                                <td>{{ paid.requestedBy ? paid.requestedBy.email : 'Deleted user' }}</td>
+                                <td>{{ paid.eventType ?: 'Event Request' }}</td>
+                                <td><strong>₱{{ (paid.paymentAmount ?: 0)|number_format(2, '.', ',') }}</strong></td>
+                                <td>{{ paid.paymentApprovedAt ? paid.paymentApprovedAt|date('Y-m-d H:i') : '-' }}</td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="5" class="empty-state">
+                                    <p>No approved payments yet</p>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
         </div>
         

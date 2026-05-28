@@ -41,5 +41,25 @@ class EventRequestRepository extends ServiceEntityRepository
             ->getQuery()
             ->getResult();
     }
+
+    public function findPaid(): array
+    {
+        return $this->createQueryBuilder('er')
+            ->where('er.paymentApprovedAt IS NOT NULL')
+            ->orderBy('er.paymentApprovedAt', 'DESC')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function totalPaidAmount(): float
+    {
+        $raw = $this->createQueryBuilder('er')
+            ->select('COALESCE(SUM(er.paymentAmount), 0)')
+            ->where('er.paymentApprovedAt IS NOT NULL')
+            ->getQuery()
+            ->getSingleScalarResult();
+
+        return (float) $raw;
+    }
 }
 

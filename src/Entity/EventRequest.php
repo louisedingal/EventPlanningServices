@@ -87,6 +87,15 @@ class EventRequest
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $preferredStyleImagePath = null;
 
+    #[ORM\Column(type: Types::DECIMAL, precision: 12, scale: 2, nullable: true)]
+    private ?string $paymentAmount = null;
+
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $paymentApprovedAt = null;
+
+    #[ORM\Column(length: 40, nullable: true)]
+    private ?string $receiptNumber = null;
+
     public function __construct()
     {
         $this->createdAt = new \DateTime();
@@ -289,6 +298,42 @@ class EventRequest
     public function setPreferredStyleImagePath(?string $preferredStyleImagePath): static
     {
         $this->preferredStyleImagePath = $preferredStyleImagePath;
+
+        return $this;
+    }
+
+    public function getPaymentAmount(): ?string
+    {
+        return $this->paymentAmount;
+    }
+
+    public function setPaymentAmount(?string $paymentAmount): static
+    {
+        $this->paymentAmount = $paymentAmount;
+
+        return $this;
+    }
+
+    public function getPaymentApprovedAt(): ?\DateTimeInterface
+    {
+        return $this->paymentApprovedAt;
+    }
+
+    public function setPaymentApprovedAt(?\DateTimeInterface $paymentApprovedAt): static
+    {
+        $this->paymentApprovedAt = $paymentApprovedAt;
+
+        return $this;
+    }
+
+    public function getReceiptNumber(): ?string
+    {
+        return $this->receiptNumber;
+    }
+
+    public function setReceiptNumber(?string $receiptNumber): static
+    {
+        $this->receiptNumber = $receiptNumber;
 
         return $this;
     }

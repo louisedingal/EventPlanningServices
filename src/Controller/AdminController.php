@@ -60,6 +60,8 @@ final class AdminController extends AbstractController
         // Get pending event requests (staff can also see and mark them as done)
         $pendingEventRequests = $eventRequestRepository->findPending();
         $totalPendingRequests = count($pendingEventRequests);
+        $paidRequests = $eventRequestRepository->findPaid();
+        $paymentRevenue = $eventRequestRepository->totalPaidAmount();
 
         return $this->render('admin/staff_dashboard.html.twig', [
             'user' => $user,
@@ -75,6 +77,8 @@ final class AdminController extends AbstractController
             'myServicePackages' => count($myServicePackages),
             'pendingEventRequests' => $pendingEventRequests,
             'totalPendingRequests' => $totalPendingRequests,
+            'paymentRevenue' => $paymentRevenue,
+            'paidRequests' => $paidRequests,
         ]);
     }
 
@@ -122,6 +126,7 @@ final class AdminController extends AbstractController
         // Get pending event requests
         $pendingEventRequests = $eventRequestRepository->findPending();
         $totalPendingRequests = count($pendingEventRequests);
+        $paymentRevenue = $eventRequestRepository->totalPaidAmount();
         
         // Group events by type
         $eventsByType = [];
@@ -188,6 +193,7 @@ final class AdminController extends AbstractController
             'recentActivities' => $recentActivities,
             'pendingEventRequests' => $pendingEventRequests,
             'totalPendingRequests' => $totalPendingRequests,
+            'paymentRevenue' => $paymentRevenue,
         ]);
     }
     
@@ -296,7 +302,8 @@ final class AdminController extends AbstractController
         EventRepository $eventRepository,
         ThemeRepository $themeRepository,
         ServicePackageRepository $servicePackageRepository,
-        VenueRepository $venueRepository
+        VenueRepository $venueRepository,
+        EventRequestRepository $eventRequestRepository
     ): Response {
         $this->denyAccessUnlessGranted('ROLE_ADMIN', null, 'Access denied. Admin access required.');
         $type = $request->query->get('type', 'all');
@@ -306,6 +313,7 @@ final class AdminController extends AbstractController
         $themes = [];
         $venues = [];
         $servicePackages = [];
+        $paidRequests = [];
         
         if ($type === 'all' || $type === 'events') {
             if ($query) {
@@ -344,14 +352,19 @@ final class AdminController extends AbstractController
                 });
             }
         }
+
+        if ($type === 'all' || $type === 'payments') {
+            $paidRequests = $eventRequestRepository->findPaid();
+        }
         
-        $totalRecords = count($events) + count($themes) + count($venues) + count($servicePackages);
+        $totalRecords = count($events) + count($themes) + count($venues) + count($servicePackages) + count($paidRequests);
         
         return $this->render('admin/records.html.twig', [
             'events' => $events,
             'themes' => $themes,
             'venues' => $venues,
             'servicePackages' => $servicePackages,
+            'paidRequests' => $paidRequests,
             'selectedType' => $type,
             'query' => $query,
             'totalRecords' => $totalRecords,

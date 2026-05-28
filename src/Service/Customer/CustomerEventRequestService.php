@@ -104,10 +104,37 @@ final class CustomerEventRequestService
             'status' => $request->getStatus(),
             'createdAt' => $request->getCreatedAt()?->format(\DateTimeInterface::ATOM),
             'canEdit' => self::EDITABLE_STATUS === $request->getStatus(),
+            'canApprovePayment' => $this->canApprovePayment($request),
             'adminNotes' => 'completed' === $request->getStatus()
                 ? $request->getAdminNotes()
                 : null,
+            'payment' => [
+                'amount' => $request->getPaymentAmount() !== null ? (float) $request->getPaymentAmount() : null,
+                'approvedAt' => $request->getPaymentApprovedAt()?->format(\DateTimeInterface::ATOM),
+                'receiptNumber' => $request->getReceiptNumber(),
+            ],
         ];
+    }
+
+    public function approvePayment(User $user, int $id): EventRequest
+    {
+        $request = $this->getForUser($user, $id);
+        if (!$this->canApprovePayment($request)) {
+            throw new BadRequestHttpException('Payment cannot be approved for this request yet.');
+        }
+
+        $amount = $this->resolvePayableAmount($request);
+        if ($amount <= 0) {
+            throw new BadRequestHttpException('Invalid payable amount.');
+        }
+
+        $request->setPaymentAmount(number_format($amount, 2, '.', ''));
+        $request->setPaymentApprovedAt(new \DateTimeImmutable());
+        $request->setReceiptNumber($this->generateReceiptNumber($request));
+        $request->setStatus('approved');
+        $this->entityManager->flush();
+
+        return $request;
     }
 
     private function applyPayload(EventRequest $request, array $payload, bool $isCreate): void
@@ -295,5 +322,39 @@ final class CustomerEventRequestService
                 'Only pending requests can be changed. Contact support for updates.'
             );
         }
+    }
+
+    private function canApprovePayment(EventRequest $request): bool
+    {
+        return null === $request->getPaymentApprovedAt() && $this->resolvePayableAmount($request) > 0;
+    }
+
+    private function resolvePayableAmount(EventRequest $request): float
+    {
+        if ($request->getServicePackage()) {
+            return (float) $request->getServicePackage()->getPrice();
+        }
+
+        $budget = $request->getBudget();
+        if ($budget === null || trim($budget) === '') {
+            return 0.0;
+        }
+
+        $clean = preg_replace('/[^0-9.\-]/', '', $budget) ?? '';
+        if ($clean === '' || !is_numeric($clean)) {
+            return 0.0;
+        }
+
+        return max(0.0, (float) $clean);
+    }
+
+    private function generateReceiptNumber(EventRequest $request): string
+    {
+        return sprintf(
+            'REC-%s-%d-%s',
+            (new \DateTimeImmutable())->format('Ymd'),
+            $request->getId(),
+            substr(bin2hex(random_bytes(3)), 0, 6)
+        );
     }
 }

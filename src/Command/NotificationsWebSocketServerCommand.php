@@ -171,6 +171,9 @@ final class NotificationsWebSocketServerCommand extends Command
                     'preferredTime' => $request->getPreferredTime(),
                     'budget' => $request->getBudget(),
                     'adminNotes' => $request->getAdminNotes(),
+                    'paymentAmount' => $request->getPaymentAmount(),
+                    'paymentApprovedAt' => $request->getPaymentApprovedAt()?->format(\DateTimeInterface::ATOM),
+                    'receiptNumber' => $request->getReceiptNumber(),
                 ],
                 $this->eventRequestRepository->findByUser($user)
             );

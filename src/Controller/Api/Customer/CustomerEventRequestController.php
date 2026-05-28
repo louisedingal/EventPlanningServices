@@ -79,6 +79,18 @@ final class CustomerEventRequestController extends AbstractController
         return CustomerApiResponse::success(['deleted' => true]);
     }
 
+    #[Route('/{id}/approve-payment', name: 'api_customer_event_requests_approve_payment', methods: ['POST'], requirements: ['id' => '\d+'])]
+    public function approvePayment(int $id): JsonResponse
+    {
+        /** @var User $user */
+        $user = $this->getUser();
+        $updated = $this->eventRequestService->approvePayment($user, $id);
+
+        return CustomerApiResponse::success(
+            $this->eventRequestService->serialize($updated)
+        );
+    }
+
     private function decodeJson(Request $request): array
     {
         $data = json_decode($request->getContent(), true);
