@@ -173,9 +173,11 @@ final class NotificationsWebSocketServerCommand extends Command
             $customerNotifications = $this->customerNotificationService->listForUser($user);
             $customerHash = sha1(json_encode($customerNotifications, JSON_UNESCAPED_SLASHES) ?: '');
             if ($force || $connection->lastCustomerHash !== $customerHash) {
+                $latest = $customerNotifications[0] ?? null;
                 $connection->send(json_encode([
                     'type' => 'customer.notifications.updated',
                     'count' => count($customerNotifications),
+                    'latest' => $latest,
                 ], JSON_UNESCAPED_SLASHES));
                 $connection->lastCustomerHash = $customerHash;
             }
@@ -197,9 +199,11 @@ final class NotificationsWebSocketServerCommand extends Command
             );
             $requestHash = sha1(json_encode($requestSnapshot, JSON_UNESCAPED_SLASHES) ?: '');
             if ($force || $connection->lastCustomerRequestsHash !== $requestHash) {
+                $latestRequest = $requestSnapshot[0] ?? null;
                 $connection->send(json_encode([
                     'type' => 'customer.event_requests.updated',
                     'count' => count($requestSnapshot),
+                    'latest' => $latestRequest,
                 ], JSON_UNESCAPED_SLASHES));
                 $connection->lastCustomerRequestsHash = $requestHash;
             }

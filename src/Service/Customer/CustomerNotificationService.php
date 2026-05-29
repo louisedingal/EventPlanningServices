@@ -62,7 +62,7 @@ final class CustomerNotificationService
         return match ($status) {
             'completed' => $notes !== ''
                 ? $notes
-                : 'Your request has been reviewed by our team. We will reach out with next steps.',
+                : 'Your booking request has been approved by our team.',
             'approved' => $notes !== ''
                 ? $notes
                 : 'Your booking request has been approved.',

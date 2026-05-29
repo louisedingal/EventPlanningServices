@@ -420,7 +420,7 @@ final class AdminController extends AbstractController
         
         $eventRequest->setStatus('completed');
         $eventRequest->setAdminNotes(
-            'Your request has been reviewed by our team. We will reach out to you shortly with next steps.'
+            'Your booking request has been approved by our team. We will reach out to you shortly with next steps.'
         );
         $entityManager->flush();
         
