@@ -3,6 +3,7 @@ import {
     hasAdminPendingLiveTables,
     initAdminPendingLiveUi,
     refreshAdminPendingTables,
+    startAdminPendingPolling,
 } from './admin-pending-realtime.js';
 /*
  * Welcome to your app's main JavaScript file!
@@ -255,6 +256,10 @@ async function connectRealtimeWebSocket() {
             }
         };
 
+        realtimeSocket.onerror = () => {
+            realtimeSocket = null;
+        };
+
         realtimeSocket.onclose = () => {
             realtimeSocket = null;
             if (realtimeReconnectTimer) {
@@ -276,8 +281,16 @@ function initRealtimeWebSocket() {
 
 document.addEventListener('DOMContentLoaded', initRealtimeWebSocket);
 document.addEventListener('turbo:load', initRealtimeWebSocket);
-document.addEventListener('DOMContentLoaded', initAdminPendingLiveUi);
-document.addEventListener('turbo:load', initAdminPendingLiveUi);
+function initAdminPendingLiveTables() {
+    initAdminPendingLiveUi();
+    if (hasAdminPendingLiveTables()) {
+        refreshAdminPendingTables({ silent: true }).catch(() => {});
+        startAdminPendingPolling(3000);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', initAdminPendingLiveTables);
+document.addEventListener('turbo:load', initAdminPendingLiveTables);
 
 // Hover-triggered random image rotator for Services
 document.addEventListener('DOMContentLoaded', () => {

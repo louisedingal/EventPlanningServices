@@ -61,7 +61,7 @@ final class NotificationsWebSocketServerCommand extends Command
         $worker->count = 1;
 
         $worker->onWebSocketConnect = function (TcpConnection $connection, Request $request): void {
-            $token = (string) ($request->get('token') ?? '');
+            $token = $this->resolveTokenFromRequest($request);
             $user = $this->resolveUserFromJwt($token);
             if (!$user) {
                 $connection->send(json_encode([
@@ -125,6 +125,22 @@ final class NotificationsWebSocketServerCommand extends Command
         return Command::SUCCESS;
     }
 
+    private function resolveTokenFromRequest(Request $request): string
+    {
+        $token = (string) ($request->get('token') ?? '');
+        if ($token !== '') {
+            return $token;
+        }
+
+        $query = (string) ($request->queryString ?? '');
+        if ($query !== '') {
+            parse_str($query, $params);
+            $token = (string) ($params['token'] ?? '');
+        }
+
+        return $token;
+    }
+
     private function resolveUserFromJwt(string $token): ?User
     {
         if ($token === '') {
@@ -137,12 +153,14 @@ final class NotificationsWebSocketServerCommand extends Command
             return null;
         }
 
-        $identifier = (string) ($payload['username'] ?? '');
+        // Lexik is configured with user_id_claim: email (see lexik_jwt_authentication.yaml).
+        $identifier = (string) ($payload['email'] ?? $payload['username'] ?? '');
         if ($identifier === '') {
             return null;
         }
 
-        return $this->userRepository->findOneBy(['email' => $identifier]);
+        return $this->userRepository->findOneBy(['email' => $identifier])
+            ?? $this->userRepository->findOneBy(['username' => $identifier]);
     }
 
     private function sendUpdates(TcpConnection $connection, bool $force): void

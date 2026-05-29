@@ -104,6 +104,13 @@ function getPendingFeedUrl() {
     return document.body?.dataset?.adminPendingFeed || '';
 }
 
+let lastPendingSnapshot = '';
+let pendingPollTimer = null;
+
+function buildPendingSnapshot(requests) {
+    return requests.map((request) => `${request.id}:${request.status}:${request.createdAt}`).join('|');
+}
+
 export function hasAdminPendingLiveTables() {
     return document.querySelectorAll('.js-pending-requests-tbody').length > 0;
 }
@@ -117,6 +124,7 @@ export async function refreshAdminPendingTables(options = {}) {
     const response = await fetch(feedUrl, {
         credentials: 'same-origin',
         headers: { Accept: 'application/json' },
+        cache: 'no-store',
     });
 
     if (!response.ok) {
@@ -126,6 +134,14 @@ export async function refreshAdminPendingTables(options = {}) {
     const payload = await response.json();
     const requests = Array.isArray(payload.requests) ? payload.requests : [];
     const count = typeof payload.count === 'number' ? payload.count : requests.length;
+    const snapshot = buildPendingSnapshot(requests);
+
+    if (options.silent && snapshot === lastPendingSnapshot) {
+        return true;
+    }
+
+    const dataChanged = snapshot !== lastPendingSnapshot;
+    lastPendingSnapshot = snapshot;
 
     document.querySelectorAll('.js-pending-requests-tbody').forEach((tbody) => {
         const showViewButton = tbody.dataset.showView === '1';
@@ -136,7 +152,7 @@ export async function refreshAdminPendingTables(options = {}) {
     updatePendingKpi(count);
     syncRequestData(requests);
 
-    if (options.flashNewRow && requests.length > 0) {
+    if (options.flashNewRow && dataChanged && requests.length > 0) {
         const newestId = requests[0]?.id;
         if (newestId) {
             const row = document.querySelector(`tr[data-request-id="${newestId}"]`);
@@ -151,6 +167,26 @@ export async function refreshAdminPendingTables(options = {}) {
     }
 
     return true;
+}
+
+export function startAdminPendingPolling(intervalMs = 3000) {
+    if (!hasAdminPendingLiveTables() || pendingPollTimer) {
+        return;
+    }
+
+    pendingPollTimer = window.setInterval(() => {
+        if (document.visibilityState !== 'visible') {
+            return;
+        }
+        refreshAdminPendingTables({ silent: true }).catch(() => {});
+    }, intervalMs);
+}
+
+export function stopAdminPendingPolling() {
+    if (pendingPollTimer) {
+        window.clearInterval(pendingPollTimer);
+        pendingPollTimer = null;
+    }
 }
 
 export function initAdminPendingLiveUi() {
