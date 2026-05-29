@@ -61,6 +61,9 @@
         {% if app.user %}
             data-realtime-token-endpoint="{{ path('app_realtime_token') }}"
             data-realtime-ws-base="{{ (app.request.isSecure ? 'wss' : 'ws') ~ '://' ~ app.request.host ~ '/ws/notifications' }}"
+            {% if is_granted('ROLE_STAFF') %}
+                data-admin-pending-feed="{{ path('app_admin_api_pending_requests') }}"
+            {% endif %}
         {% endif %}
     >
         {% block body %}{% endblock %}

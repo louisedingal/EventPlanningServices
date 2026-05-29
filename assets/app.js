@@ -1,4 +1,9 @@
 import './bootstrap.js';
+import {
+    hasAdminPendingLiveTables,
+    initAdminPendingLiveUi,
+    refreshAdminPendingTables,
+} from './admin-pending-realtime.js';
 /*
  * Welcome to your app's main JavaScript file!
  *
@@ -226,8 +231,15 @@ async function connectRealtimeWebSocket() {
                 || path === '/';
 
             if (payload.type === 'admin.pending_requests.updated' && isAdminPendingDataPage) {
-                showRealtimeToast('Pending requests updated. Refreshing...');
-                setTimeout(() => window.location.reload(), 350);
+                if (hasAdminPendingLiveTables()) {
+                    refreshAdminPendingTables({ flashNewRow: true })
+                        .then((ok) => {
+                            if (ok) {
+                                showRealtimeToast('New booking received');
+                            }
+                        })
+                        .catch(() => {});
+                }
                 return;
             }
 
@@ -264,6 +276,8 @@ function initRealtimeWebSocket() {
 
 document.addEventListener('DOMContentLoaded', initRealtimeWebSocket);
 document.addEventListener('turbo:load', initRealtimeWebSocket);
+document.addEventListener('DOMContentLoaded', initAdminPendingLiveUi);
+document.addEventListener('turbo:load', initAdminPendingLiveUi);
 
 // Hover-triggered random image rotator for Services
 document.addEventListener('DOMContentLoaded', () => {

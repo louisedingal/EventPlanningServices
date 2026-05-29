@@ -170,7 +170,7 @@
         <!-- Pending Event Requests Section -->
         <div id="event-requests-section" class="table-card" style="margin-top: 2rem;">
             <div class="table-header">
-                <h3>Pending Event Requests ({{ totalPendingRequests }})</h3>
+                <h3 class="js-pending-requests-heading">Pending Event Requests ({{ totalPendingRequests }})</h3>
             </div>
             <div class="table-responsive">
                 <table class="data-table">
@@ -187,10 +187,10 @@
                             <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="js-pending-requests-tbody" data-show-view="0">
                         {% if pendingEventRequests|length > 0 %}
                             {% for request in pendingEventRequests %}
-                                <tr>
+                                <tr data-request-id="{{ request.id }}">
                                     <td>{{ request.createdAt|date('Y-m-d H:i') }}</td>
                                     <td>{% include 'admin/_event_request_source_badge.html.twig' with { request: request } %}</td>
                                     <td><strong>{{ request.requestedBy ? request.requestedBy.email : 'Deleted user' }}</strong></td>

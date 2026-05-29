@@ -78,6 +78,7 @@ security:
         - { path: ^/admin/records, roles: ROLE_ADMIN }
         - { path: ^/admin/staff-dashboard, roles: ROLE_STAFF }
         - { path: ^/admin/pending-requests, roles: ROLE_STAFF }
+        - { path: ^/admin/api/pending-event-requests, roles: ROLE_STAFF }
         - { path: ^/admin/event-request, roles: ROLE_STAFF }
         # Admin routes (profile, change password) - admin and staff can access
         - { path: ^/admin/profile, roles: ROLE_STAFF }

@@ -72,7 +72,7 @@
                     <i class="bi bi-envelope-exclamation kpi-icon" style="color: white;"></i>
                     <span class="kpi-label" style="color: rgba(255,255,255,0.9);">PENDING REQUESTS</span>
                 </div>
-                <div class="kpi-value" style="color: white;">{{ totalPendingRequests }}</div>
+                <div class="kpi-value js-pending-kpi-value" style="color: white;">{{ totalPendingRequests }}</div>
             </a>
             
             <a href="{{ path('app_event_index') }}" class="kpi-card" style="text-decoration: none; cursor: pointer; transition: all 0.2s ease;">
@@ -341,7 +341,7 @@
         <!-- Event Requests Section -->
         <div id="event-requests-section" class="table-card" style="margin-top: 2rem;">
             <div class="table-header">
-                <h3>Pending Event Requests ({{ totalPendingRequests }})</h3>
+                <h3 class="js-pending-requests-heading">Pending Event Requests ({{ totalPendingRequests }})</h3>
             </div>
             <div class="table-responsive">
                 <table class="data-table">
@@ -358,10 +358,10 @@
                             <th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody class="js-pending-requests-tbody" data-show-view="1">
                         {% if pendingEventRequests|length > 0 %}
                             {% for request in pendingEventRequests %}
-                                <tr>
+                                <tr data-request-id="{{ request.id }}">
                                     <td>{{ request.createdAt|date('Y-m-d H:i') }}</td>
                                     <td>{% include 'admin/_event_request_source_badge.html.twig' with { request: request } %}</td>
                                     <td><strong>{{ request.requestedBy ? request.requestedBy.email : 'Deleted user' }}</strong></td>
@@ -376,7 +376,7 @@
                                     </td>
                                     <td>
                                         <div style="display: flex; gap: 0.5rem; align-items: center;">
-                                            <button class="action-btn view-btn" onclick="openRequestModal({{ request.id }})" style="padding: 0.5rem 1rem;">
+                                            <button type="button" class="action-btn view-btn" data-view-request="{{ request.id }}" style="padding: 0.5rem 1rem;">
                                                 <i class="bi bi-eye"></i> View
                                             </button>
                                             <form method="post" action="{{ path('app_admin_event_request_mark_done', {'id': request.id}) }}" style="display: inline-block; margin: 0;">

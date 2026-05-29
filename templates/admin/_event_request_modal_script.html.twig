@@ -1,6 +1,8 @@
 {# Requires: pendingEventRequests, ServicePackageImageUrlResolver via request entity paths #}
 <script>
-    const requestData = {
+    window.requestData = window.requestData || {};
+    const requestData = window.requestData;
+    Object.assign(requestData, {
         {% for request in pendingEventRequests %}
         {{ request.id }}: {
             id: {{ request.id }},
@@ -21,7 +23,7 @@
             createdAt: "{{ request.createdAt|date('Y-m-d H:i:s') }}"
         }{% if not loop.last %},{% endif %}
         {% endfor %}
-    };
+    });
 
     function styleLabelForRequest(request) {
         if (request.preferredStyleLabel) {
@@ -53,7 +55,7 @@
         `;
     }
 
-    function openRequestModal(requestId) {
+    window.openRequestModal = function openRequestModal(requestId) {
         const modal = document.getElementById('requestModal');
         const modalContent = document.getElementById('requestModalContent');
         const request = requestData[requestId];
@@ -118,7 +120,7 @@
         `;
 
         modal.style.display = 'block';
-    }
+    };
 
     function closeRequestModal() {
         const modal = document.getElementById('requestModal');
