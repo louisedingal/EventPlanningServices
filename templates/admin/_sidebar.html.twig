@@ -53,6 +53,10 @@
             <i class="bi bi-box-seam nav-icon"></i>
             Service Packages
         </a>
+        <a href="{{ path('app_payment_index') }}" class="nav-item {{ route_name starts with 'app_payment' ? 'active' : '' }}">
+            <i class="bi bi-receipt nav-icon"></i>
+            Payments
+        </a>
         {% if is_granted('ROLE_ADMIN') %}
             <a href="{{ path('app_admin_records') }}" class="nav-item {{ route_name == 'app_admin_records' ? 'active' : '' }}">
                 <i class="bi bi-box nav-icon"></i>

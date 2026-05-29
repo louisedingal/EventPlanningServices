@@ -1,0 +1,98 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Payments - Lux Events{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="{{ asset('styles/admin.css') }}">
+{% endblock %}
+
+{% block body %}
+<div class="admin-container">
+    {% include 'admin/_sidebar.html.twig' %}
+    <main class="main-content">
+        {% include 'admin/_header.html.twig' with {title: 'Payments'} %}
+
+        <div class="kpi-grid" style="margin-bottom: 1.5rem;">
+            <div class="kpi-card">
+                <div class="kpi-header">
+                    <i class="bi bi-receipt kpi-icon"></i>
+                    <span class="kpi-label">Total transactions</span>
+                </div>
+                <div class="kpi-value">{{ payments|length }}</div>
+            </div>
+            <div class="kpi-card">
+                <div class="kpi-header">
+                    <i class="bi bi-cash-stack kpi-icon"></i>
+                    <span class="kpi-label">Total approved</span>
+                </div>
+                <div class="kpi-value">₱{{ totalAmount|number_format(2, '.', ',') }}</div>
+            </div>
+        </div>
+
+        <div class="search-filter-section">
+            <form method="GET" action="{{ path('app_payment_index') }}" class="search-form">
+                <div>
+                    <label>Search</label>
+                    <input type="text" name="q" value="{{ query }}" placeholder="Receipt, customer email, event type, request ID...">
+                </div>
+                <div style="display: flex; gap: 0.5rem; align-items: end;">
+                    <button type="submit" class="btn-primary">
+                        <i class="bi bi-search"></i> Search
+                    </button>
+                    {% if query %}
+                        <a href="{{ path('app_payment_index') }}" class="btn-secondary">Clear</a>
+                    {% endif %}
+                </div>
+            </form>
+        </div>
+
+        <div class="table-card">
+            <div class="table-header">
+                <h3>Payment transactions</h3>
+                <span class="view-all-link" style="cursor: default;">From mobile app approvals</span>
+            </div>
+            <div class="table-content">
+                <table class="data-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Receipt No.</th>
+                            <th>Request ID</th>
+                            <th>Customer</th>
+                            <th>Event type</th>
+                            <th>Amount</th>
+                            <th>Source</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for payment in payments %}
+                            <tr>
+                                <td>#{{ payment.id }}</td>
+                                <td><strong>{{ payment.receiptNumber }}</strong></td>
+                                <td>#{{ payment.eventRequest ? payment.eventRequest.id : '-' }}</td>
+                                <td>{{ payment.user ? payment.user.email : 'Deleted user' }}</td>
+                                <td>{{ payment.eventRequest ? payment.eventRequest.eventType : '-' }}</td>
+                                <td><strong>₱{{ payment.amount|number_format(2, '.', ',') }}</strong></td>
+                                <td>{{ payment.sourceLabel }}</td>
+                                <td>{{ payment.createdAt ? payment.createdAt|date('Y-m-d H:i') : '-' }}</td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="8" class="empty-state">
+                                    {% if query %}
+                                        No payments match your search.
+                                    {% else %}
+                                        No payment transactions recorded yet.
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+{% endblock %}

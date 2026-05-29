@@ -91,7 +91,7 @@
                 <div class="kpi-value">₱{{ totalRevenue|number_format(0, '.', ',') }}</div>
             </div>
 
-            <a href="{{ path('app_admin_records', {type: 'payments'}) }}" class="kpi-card" style="text-decoration: none; cursor: pointer; transition: all 0.2s ease;">
+            <a href="{{ path('app_payment_index') }}" class="kpi-card" style="text-decoration: none; cursor: pointer; transition: all 0.2s ease;">
                 <div class="kpi-header">
                     <i class="bi bi-receipt kpi-icon"></i>
                     <span class="kpi-label">APPROVED PAYMENTS</span>
@@ -111,7 +111,7 @@
         <div class="table-card" style="margin-top: 2rem;">
             <div class="table-header">
                 <h3>Latest Payment Receipts</h3>
-                <a href="{{ path('app_admin_records', {type: 'payments'}) }}" class="view-all-link">View All →</a>
+                <a href="{{ path('app_payment_index') }}" class="view-all-link">View All →</a>
             </div>
             <div class="table-content">
                 <table class="data-table">
