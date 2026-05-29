@@ -206,7 +206,11 @@ async function connectRealtimeWebSocket() {
             }
 
             const path = window.location.pathname;
-            const isPendingPage = path.startsWith('/admin/pending-requests');
+            const isAdminPendingDataPage =
+                path.startsWith('/admin/pending-requests')
+                || path === '/admin/'
+                || path === '/admin'
+                || path.startsWith('/admin/staff-dashboard');
             const isAdminDataPage =
                 path.startsWith('/admin/events')
                 || path.startsWith('/admin/records')
@@ -221,7 +225,7 @@ async function connectRealtimeWebSocket() {
                 || path.startsWith('/venue')
                 || path === '/';
 
-            if (payload.type === 'admin.pending_requests.updated' && isPendingPage) {
+            if (payload.type === 'admin.pending_requests.updated' && isAdminPendingDataPage) {
                 showRealtimeToast('Pending requests updated. Refreshing...');
                 setTimeout(() => window.location.reload(), 350);
                 return;
