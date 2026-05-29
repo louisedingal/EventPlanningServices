@@ -24,6 +24,7 @@ final class CustomerEventRequestService
         private EventRequestRepository $eventRequestRepository,
         private ServicePackageRepository $servicePackageRepository,
         private EventRequestNotifier $eventRequestNotifier,
+        private CustomerPaymentService $customerPaymentService,
         private ServicePackageImageUrlResolver $packageImageUrlResolver,
         private EventRequestStyleImageResolver $styleImageResolver,
         private string $defaultUri = 'http://127.0.0.1:8000',
@@ -108,11 +109,7 @@ final class CustomerEventRequestService
             'adminNotes' => 'completed' === $request->getStatus()
                 ? $request->getAdminNotes()
                 : null,
-            'payment' => [
-                'amount' => $request->getPaymentAmount() !== null ? (float) $request->getPaymentAmount() : null,
-                'approvedAt' => $request->getPaymentApprovedAt()?->format(\DateTimeInterface::ATOM),
-                'receiptNumber' => $request->getReceiptNumber(),
-            ],
+            'payment' => $this->customerPaymentService->serializeFromEventRequest($request),
         ];
     }
 
@@ -129,9 +126,12 @@ final class CustomerEventRequestService
         }
 
         $request->setPaymentAmount(number_format($amount, 2, '.', ''));
-        $request->setPaymentApprovedAt(new \DateTimeImmutable());
-        $request->setReceiptNumber($this->generateReceiptNumber($request));
+        $approvedAt = new \DateTimeImmutable();
+        $request->setPaymentApprovedAt($approvedAt);
+        $receiptNumber = $this->generateReceiptNumber($request);
+        $request->setReceiptNumber($receiptNumber);
         $request->setStatus('approved');
+        $this->customerPaymentService->recordMobileApproval($user, $request, $amount, $receiptNumber);
         $this->entityManager->flush();
 
         return $request;

@@ -125,13 +125,13 @@
                         </tr>
                     </thead>
                     <tbody>
-                        {% for paid in paidRequests|slice(0, 10) %}
+                        {% for paid in payments|slice(0, 10) %}
                             <tr>
                                 <td><strong>{{ paid.receiptNumber ?: '-' }}</strong></td>
-                                <td>{{ paid.requestedBy ? paid.requestedBy.email : 'Deleted user' }}</td>
-                                <td>{{ paid.eventType ?: 'Event Request' }}</td>
-                                <td><strong>₱{{ (paid.paymentAmount ?: 0)|number_format(2, '.', ',') }}</strong></td>
-                                <td>{{ paid.paymentApprovedAt ? paid.paymentApprovedAt|date('Y-m-d H:i') : '-' }}</td>
+                                <td>{{ paid.user ? paid.user.email : 'Deleted user' }}</td>
+                                <td>{{ paid.eventRequest ? paid.eventRequest.eventType : 'Event Request' }}</td>
+                                <td><strong>₱{{ (paid.amount ?: 0)|number_format(2, '.', ',') }}</strong></td>
+                                <td>{{ paid.createdAt ? paid.createdAt|date('Y-m-d H:i') : '-' }}</td>
                             </tr>
                         {% else %}
                             <tr>

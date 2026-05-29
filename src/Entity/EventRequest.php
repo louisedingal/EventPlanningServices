@@ -96,6 +96,9 @@ class EventRequest
     #[ORM\Column(length: 40, nullable: true)]
     private ?string $receiptNumber = null;
 
+    #[ORM\OneToOne(mappedBy: 'eventRequest', targetEntity: Payment::class, cascade: ['persist'])]
+    private ?Payment $paymentTransaction = null;
+
     public function __construct()
     {
         $this->createdAt = new \DateTime();
@@ -334,6 +337,22 @@ class EventRequest
     public function setReceiptNumber(?string $receiptNumber): static
     {
         $this->receiptNumber = $receiptNumber;
+
+        return $this;
+    }
+
+    public function getPaymentTransaction(): ?Payment
+    {
+        return $this->paymentTransaction;
+    }
+
+    public function setPaymentTransaction(?Payment $paymentTransaction): static
+    {
+        if ($paymentTransaction && $paymentTransaction->getEventRequest() !== $this) {
+            $paymentTransaction->setEventRequest($this);
+        }
+
+        $this->paymentTransaction = $paymentTransaction;
 
         return $this;
     }

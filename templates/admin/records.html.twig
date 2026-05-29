@@ -59,7 +59,7 @@
                 <a href="{{ path('app_admin_records', {type: 'payments'}) }}" 
                    class="btn-secondary" 
                    style="padding: 0.75rem 1.5rem; text-decoration: none; {{ selectedType == 'payments' ? 'background: #fef3c7; border-color: #fbbf24; color: #1e293b;' : '' }}">
-                    Payments ({{ paidRequests|length }})
+                    Payments ({{ payments|length }})
                 </a>
             </div>
         </div>
@@ -253,9 +253,9 @@
                 {% endif %}
 
                 {% if selectedType == 'all' or selectedType == 'payments' %}
-                    {% if paidRequests|length > 0 %}
+                    {% if payments|length > 0 %}
                         <div style="margin-bottom: 2rem;">
-                            <h4 style="margin-bottom: 1rem; color: #1e293b;">Approved Payments ({{ paidRequests|length }})</h4>
+                            <h4 style="margin-bottom: 1rem; color: #1e293b;">Approved Payments ({{ payments|length }})</h4>
                             <table class="data-table">
                                 <thead>
                                     <tr>
@@ -268,14 +268,14 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {% for paid in paidRequests %}
+                                    {% for paid in payments %}
                                         <tr>
-                                            <td>#{{ paid.id }}</td>
+                                            <td>#{{ paid.eventRequest ? paid.eventRequest.id : '-' }}</td>
                                             <td><strong>{{ paid.receiptNumber ?: '-' }}</strong></td>
-                                            <td>{{ paid.requestedBy ? paid.requestedBy.email : 'Deleted user' }}</td>
-                                            <td>{{ paid.eventType ?: '-' }}</td>
-                                            <td><strong>₱{{ (paid.paymentAmount ?: 0)|number_format(2, '.', ',') }}</strong></td>
-                                            <td>{{ paid.paymentApprovedAt ? paid.paymentApprovedAt|date('Y-m-d H:i') : '-' }}</td>
+                                            <td>{{ paid.user ? paid.user.email : 'Deleted user' }}</td>
+                                            <td>{{ paid.eventRequest ? paid.eventRequest.eventType : '-' }}</td>
+                                            <td><strong>₱{{ (paid.amount ?: 0)|number_format(2, '.', ',') }}</strong></td>
+                                            <td>{{ paid.createdAt ? paid.createdAt|date('Y-m-d H:i') : '-' }}</td>
                                         </tr>
                                     {% endfor %}
                                 </tbody>
@@ -284,7 +284,7 @@
                     {% endif %}
                 {% endif %}
 
-                {% if (selectedType == 'all' and totalRecords == 0) or (selectedType != 'all' and events|length == 0 and themes|length == 0 and venues|length == 0 and servicePackages|length == 0 and paidRequests|length == 0) %}
+                {% if (selectedType == 'all' and totalRecords == 0) or (selectedType != 'all' and events|length == 0 and themes|length == 0 and venues|length == 0 and servicePackages|length == 0 and payments|length == 0) %}
                     <div class="empty-state">
                         <p>No records found</p>
                     </div>
